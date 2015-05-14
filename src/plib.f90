@@ -765,12 +765,16 @@ MODULE plib_module
 
     max_threads = OMP_GET_MAX_THREADS()
 
+    WRITE(*,*)  max_threads, nthreads, nthreads > max_threads, ierr
     IF ( nthreads > max_threads ) THEN
       ierr = 1
       nthreads = max_threads
     END IF
+    WRITE(*,*)  max_threads, nthreads, nthreads > max_threads, ierr
 
     CALL glmax ( ierr, comm_snap )
+    WRITE(*,*)  max_threads, nthreads, nthreads > max_threads, ierr
+
     IF ( ierr /= 0 ) THEN
       error = '*WARNING: PINIT_OMP: NTHREADS>MAX_THREADS; reset to' // &
               ' MAX_THREADS'

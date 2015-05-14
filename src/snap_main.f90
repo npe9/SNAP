@@ -104,6 +104,7 @@ PROGRAM snap_main
   error = ' '
 
   CALL pinit ( t1 )
+  CALL share_init( iproc )
 
   CALL wtime ( t2 )
   tparset = tparset + t2 - t1
@@ -119,15 +120,25 @@ PROGRAM snap_main
     CALL print_error ( 0, error )
     CALL stop_run ( 0, 0, 0 )
   END IF
+! so how do we change this?
+! can do I have to do it this way?
+! wait, is it dong some magic with mpi?
+  IF (ifile == 'stdin') THEN
+    iunit = 5
+  ELSE
+    CALL open_file ( iunit, ifile, 'OLD', 'READ', ierr, error )
+  END IF
 
-  CALL open_file ( iunit, ifile, 'OLD', 'READ', ierr, error )
   CALL bcast ( ierr, comm_snap, root )
   IF ( ierr /= 0 ) THEN
     CALL print_error ( 0, error )
     CALL stop_run ( 0, 0, 0 )
   END IF
-
-  CALL open_file ( ounit, ofile, 'REPLACE', 'WRITE', ierr, error )
+  IF (ofile == 'stdout') THEN
+    ounit = 6
+  ELSE
+    CALL open_file ( ounit, ofile, 'REPLACE', 'WRITE', ierr, error )
+  END IF
   CALL bcast ( ierr, comm_snap, root )
   IF ( ierr /= 0 ) THEN
     CALL print_error ( 0, error )
@@ -143,10 +154,14 @@ PROGRAM snap_main
 !
 ! Read input
 !_______________________________________________________________________
+  IF (ifile /= 'stdin') THEN
+   CALL read_input
+  END IF
 
-  CALL read_input
-
+  WRITE (*,*) "close file"
   CALL close_file ( iunit, ierr, error )
+  
+  WRITE (*,*) "bcast"
   CALL bcast ( ierr, comm_snap, root )
   IF ( ierr /= 0 ) THEN
     CALL print_error ( ounit, error )
@@ -158,6 +173,7 @@ PROGRAM snap_main
 ! if necessary. Don't stop run. Set up the SDD MPI topology.
 !_______________________________________________________________________
 
+  WRITE (*,*) "wtime"
   CALL wtime ( t3 )
 
   CALL pinit_omp ( ierr, error )
@@ -165,14 +181,17 @@ PROGRAM snap_main
 
   CALL pcomm_set
 
+  WRITE (*,*) "pcomm_set"
   CALL wtime ( t4 )
   tparset = tparset + t4 - t3
 !_______________________________________________________________________
 !
 ! Setup problem
 !_______________________________________________________________________
-
+  write (*,*) "setting up" 
   CALL setup
+  
+  WRITE (*,*) "set up"
 !_______________________________________________________________________
 !
 ! Call for the problem solution

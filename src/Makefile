@@ -5,33 +5,34 @@ OPT = yes
 FFLAGS = -O3
 FFLAG2 =
 
-FORTRAN = mpif90
+#FORTRAN = mpif90
 #FORTRAN = ifort
-#FORTRAN = gfortran
+FORTRAN = gfortran
 #FORTRAN = bg-gfortran
 
 #ifeq ($(FORTRAN),ifort)
-ifeq ($(FORTRAN),mpif90)
-  TARGET = snap
-  FFLAGS = -O3 -openmp
-  FFLAG2 =
-  ifeq ($(OPT),no)
-    TARGET = snap_db
-    FFLAGS = -g -O0 -check bounds -traceback -openmp
-    FFLAG2 =
-  endif
-endif
-
-#ifeq ($(FORTRAN),gfortran)
-#  TARGET = snapg
-#  FFLAGS = -O3
+#ifeq ($(FORTRAN),mpif90)
+#  TARGET = snap
+#  FFLAGS = -O3 -fopenmp
 #  FFLAG2 =
 #  ifeq ($(OPT),no)
-#    TARGET = snapg_db
-#    FFLAGS = -g -O0 -fbounds-check
-#    FFLAG2 = -fbacktrace
+#    TARGET = snap_db
+#    FFLAGS = -g -O0 -check bounds -traceback -openmp
+#    FFLAG2 =
 #  endif
 #endif
+
+ifeq ($(FORTRAN),gfortran)
+  TARGET = snapg 
+  CFLAGS = -I../../liblwk -I../../../include -L../../liblwk -llwk -g
+  FFLAGS = -O0 -fopenmp -g 
+  FFLAG2 = -static -Wl,--whole-archive -L../../libxpmem -lxpmem -lpthread -Wl,--no-whole-archive -L../../liblwk -llwk
+  ifeq ($(OPT),no)
+    TARGET = snapg_db
+    FFLAGS = -g -O0 -fbounds-check
+    FFLAG2 = -fbacktrace
+  endif
+endif
 
 #RDIST = no
 #ifeq ($(FORTRAN),bf-gfortran)
@@ -55,15 +56,17 @@ endif
 OBJS = global.o snap_main.o utils.o version.o plib.o geom.o sn.o \
        data.o control.o input.o setup.o dealloc.o translv.o solvar.o \
        outer.o expxs.o inner.o sweep.o octsweep.o dim1_sweep.o dim3_sweep.o \
-       output.o time.o mms.o
+       output.o time.o mms.o gfortran_iargc.o mpidummy.o syscalls.o analyze.o analytics.o
+
 
 SRCS = global.f90 snap_main.f90 utils.f90 version.f90 plib.f90 geom.f90 \
        sn.f90 data.f90 control.f90 input.f90 setup.f90 dealloc.f90 \
        translv.f90 solvar.f90 outer.f90 expxs.f90 inner.f90 sweep.f90 \
-       octsweep.f90 dim1_sweep.f90 dim3_sweep.f90 output.f90 time.f90 mms.f90
+       octsweep.f90 dim1_sweep.f90 dim3_sweep.f90 output.f90 time.f90 \
+       mms.f90 gfortran_iargc.c mpidummy.c
 
 $(TARGET) :	$(OBJS)
-		$(FORTRAN) $(FFLAGS) $(FFLAG2) -o $@ $(OBJS)
+		$(FORTRAN) $(FFLAGS) $(FFLAG2) -o $@ $(OBJS) -llwk
 
 snap_main.o :	global.o utils.o version.o input.o setup.o output.o time.o \
 		dealloc.o plib.o control.o

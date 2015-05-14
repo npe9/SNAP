@@ -34,7 +34,7 @@ MODULE global_module
 
   CHARACTER(LEN=64) :: ifile, ofile
 
-  INTEGER(i_knd), PARAMETER :: iunit=10, ounit=11
+  INTEGER(i_knd)  :: iunit=10, ounit=11
 !_______________________________________________________________________
 !
 ! Commonly used numbers.

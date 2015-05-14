@@ -59,13 +59,13 @@ MODULE utils_module
 
     IF ( iproc /= root ) RETURN
 
-    IF ( IARGC() < 2 ) THEN
-      ierr = 1
-      error = '***ERROR: CMDARG: Missing command line entry'
-      RETURN
-    END IF
-
-    DO n = 1, 2
+    SELECT CASE (IARGC())
+	CASE (0)
+		! what is stdout in fortran?
+		ifile = 'stdin'
+		ofile = 'stdout'
+	CASE (2)
+     DO n = 1, 2
 
       CALL GETARG ( n, arg )
       arg = ADJUSTL( arg )
@@ -78,8 +78,16 @@ MODULE utils_module
       ELSE IF ( n == 2 ) THEN
         ofile = arg
       END IF
+     END DO
 
-    END DO
+	CASE DEFAULT
+     	ierr = 1
+		error = '***ERROR: CMDARG: Missing command line entry'
+		RETURN
+    END SELECT
+
+
+
 !_______________________________________________________________________
 !_______________________________________________________________________
 
