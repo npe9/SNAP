@@ -32,7 +32,7 @@ MODULE global_module
 ! ounit       - output file unit number
 !_______________________________________________________________________
 
-  CHARACTER(LEN=64) :: ifile, ofile
+  CHARACTER(LEN=64) :: ifile, ofile, segment
 
   INTEGER(i_knd)  :: iunit=10, ounit=11
 !_______________________________________________________________________

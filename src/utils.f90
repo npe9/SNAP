@@ -9,7 +9,7 @@
 
 MODULE utils_module
 
-  USE global_module, ONLY: i_knd, ifile, ofile
+  USE global_module, ONLY: i_knd, ifile, ofile, segment
 
   USE dealloc_module
 
@@ -64,6 +64,12 @@ MODULE utils_module
 		! what is stdout in fortran?
 		ifile = 'stdin'
 		ofile = 'stdout'
+    CASE (1)
+        ifile = 'stdin'
+		ofile = 'stdout'
+        CALL GETARG ( 1, arg )
+        segment = ADJUSTL( arg )
+
 	CASE (2)
      DO n = 1, 2
 

@@ -321,6 +321,8 @@ int setup1_(int *nx, int *ny, int *nz, int *ng) {
     char filename[10];
 
     cte->finalized = 1;
+	// TODO(npe) destroy the xpmem?
+	for(;;);
     if(msync(cte, sizeof(struct usda), MS_SYNC | MS_UPDATE) < 0)
       printf("MSYNC FAILED\n");
 

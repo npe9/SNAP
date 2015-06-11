@@ -60,7 +60,7 @@ PROGRAM snap_main
 !
 !-----------------------------------------------------------------------
 
-  USE global_module, ONLY: i_knd, r_knd, ifile, ofile, iunit, ounit
+  USE global_module, ONLY: i_knd, r_knd, ifile, ofile, segment, iunit, ounit
 
   USE utils_module
 

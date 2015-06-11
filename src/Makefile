@@ -24,9 +24,9 @@ FORTRAN = gfortran
 
 ifeq ($(FORTRAN),gfortran)
   TARGET = snapg 
-  CFLAGS = -I../../liblwk -I../../../include -L../../liblwk -llwk -g
+  CFLAGS = -I../../kitten/include -I../../kitten/user/liblwk -I../../xpmem/include -L../../kitten/user/liblwk -llwk -g
   FFLAGS = -O0 -fopenmp -g 
-  FFLAG2 = -static -Wl,--whole-archive -L../../libxpmem -lxpmem -lpthread -Wl,--no-whole-archive -L../../liblwk -llwk
+  FFLAG2 = -static -Wl,--whole-archive -L../../xpmem/lib -lxpmem -lpthread -Wl,--no-whole-archive -L../../kitten/user/liblwk -llwk
   ifeq ($(OPT),no)
     TARGET = snapg_db
     FFLAGS = -g -O0 -fbounds-check
