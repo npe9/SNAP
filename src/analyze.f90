@@ -38,18 +38,24 @@ SUBROUTINE analyze(i)
   CALL MPI_COMM_SIZE ( MPI_COMM_WORLD, nproc, ierr )
   CALL MPI_COMM_RANK ( MPI_COMM_WORLD, iproc, ierr )
 
+  WRITE (*, *) 'setting up'
   CALL setup(nx, ny, nz, ng, dz, dy, dz, i, iproc)
 
+  WRITE (*, *) 'allocing tmp'
   ALLOCATE( tmp(nx,ny,nz,ng), STAT=ierr)
+  WRITE (*, *) 'allocing pop'
   ALLOCATE( pop(ng), STAT=ierr)
+  WRITE (*, *) 'allocing res'
   ALLOCATE( res(ng), STAT=ierr)  
 
-  CALL allocate_array(cptr1, cptr2, cy, fin)
+  WRITE (*, *) 'calling allocate'
+  CALL allocate(cptr1, cptr2, cy, fin)
 
   loop: DO WHILE ( fin == 0)
      CALL C_F_POINTER(cptr1, flux, [nx,ny,nz,ng])
      CALL C_F_POINTER(cptr2, v, [ng])
 
+    WRITE (*, *) 'doing while'
      pop=zero
      tmp = flux*dx*dy*dz
 
@@ -67,11 +73,11 @@ SUBROUTINE analyze(i)
            WRITE ( *,* ) pop(g)
         END DO
      END IF
-     CALL deallocate_shared 
-     CALL allocate_array(cptr1, cptr2, cy, fin)
+     CALL deallocate
+     CALL allocate(cptr1, cptr2, cy, fin)
   END DO loop
-  CALL deallocate_shared
-  CALL shm_close
+  CALL deallocate
+  CALL finalize
   CALL MPI_FINALIZE ( ierr )
   CALL exit ( 0 )
 END SUBROUTINE analyze

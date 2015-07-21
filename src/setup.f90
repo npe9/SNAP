@@ -26,7 +26,7 @@ MODULE setup_module
 
   USE mms_module, ONLY: mms_setup
 
-  USE utils_module, ONLY: print_error, stop_run, open_file, close_file
+  USE utils_module, ONLY: print_error, stop_run, open_file, close_file, segment
 
   USE time_module, ONLY: tset, wtime
 
@@ -88,8 +88,10 @@ MODULE setup_module
 !   Allocate needed arrays
 !_______________________________________________________________________
     CALL setup_alloc ( flg, ierr, error )
+    WRITE (*, *) 'setup alloced'
     IF ( ierr /= 0 ) THEN
       CALL print_error ( ounit, error )
+      WRITE (*, *) 'setup_alloc failure'
       CALL stop_run ( flg, 0, 0 )
     END IF
 !_______________________________________________________________________
@@ -101,23 +103,34 @@ MODULE setup_module
 !   expansion basis function array.
 !_______________________________________________________________________
 
+    WRITE (*, *) 'setting up delta'
     CALL setup_delta
-
+    WRITE (*, *) 'set up delta'
+    WRITE (*, *) 'setup_vel'
     CALL setup_vel
-
+    WRITE (*, *) 'setup_velled'
+    WRITE (*, *) 'setup_angle'
     CALL setup_angle
-
+    WRITE (*, *) 'setup_angled'
+    WRITE (*, *) 'setup_mat'
     CALL setup_mat ( mis, mie, mjs, mje, mks, mke )
-
+    WRITE (*, *) 'setup_matted'
+    WRITE (*, *) 'setup_data'
     CALL setup_data
-
+    WRITE (*, *) 'setup_dataed'
+    WRITE (*, *) 'expcoeff'
     CALL expcoeff ( ndimen )
-
+    WRITE (*, *) 'expcoeffed'
+    WRITE (*, *) 'setup_srcing'
     CALL setup_src ( qis, qie, qjs, qje, qks, qke, ierr, error )
+    WRITE (*, *) 'setup_srced'
     IF ( ierr /= 0 ) THEN
+        WRITE (*, *) 'stupid piece of crud error'
       CALL print_error ( ounit, error )
+      WRITE (*, *) 'setup_src error'
       CALL stop_run ( 2, 0, 0 )
-    END IF
+  END IF
+  WRITE (*, *) 'past setup_src error'
 !_______________________________________________________________________
 !
 !   Echo the data from this module to the output file. If requested via
@@ -125,18 +138,26 @@ MODULE setup_module
 !_______________________________________________________________________
 
     IF ( iproc == root ) THEN
+        WRITE (*, *) 'doing setup echo'
       CALL setup_echo ( mis, mie, mjs, mje, mks, mke, qis, qie, qjs,   &
       qje, qks, qke )
+        WRITE (*, *) 'did setup echo'
       IF ( scatp == 1 ) CALL setup_scatp ( ierr, error )
+      WRITE (*, *) 'did setup scatp'
     END IF
 
+    WRITE (*, *) 'glmaxing'
     CALL glmax ( ierr, comm_snap )
+    WRITE (*, *) 'glmaxed'
     IF ( ierr /= 0 ) THEN
       CALL print_error ( ounit, error )
+      WRITE (*, *) 'glmax error'
       CALL stop_run ( 3, 0, 0 )
     END IF
 
+    WRITE (*, *) 'wtiming'
     CALL wtime ( t2 )
+    WRITE (*, *) 'wtimed'
     tset = t2 - t1
 !_______________________________________________________________________
 !_______________________________________________________________________
@@ -169,11 +190,12 @@ MODULE setup_module
       RETURN
     END IF
     write (*,*) "setup1"
-    CALL setup1(nx, ny, nz, ng)
+    CALL setup1(nx, ny, nz, ng, segment)
     write (*,*) "newproc"
-    CALL newproc
     CALL data_allocate ( nx, ny, nz, nmom, nang, noct, timedep, ierr )
+    write (*, *) 'data allocated'
     CALL glmax ( ierr, comm_snap )
+    write (*, *) 'glmaxed'
     IF ( ierr /= 0 ) THEN
       flg = 1
       error = '***ERROR: SETUP_ALLOC: Allocation error in DATA_ALLOCATE'
@@ -633,14 +655,16 @@ MODULE setup_module
     INTEGER(i_knd) :: i, j
 !_______________________________________________________________________
 
+    WRITE (*, *) 'writing star'
     WRITE( ounit, 131 ) ( star, i = 1, 80 )
-
+    WRITE (*, *) 'writing 132 and ndimen'
     WRITE( ounit, 132 )
     WRITE( ounit, 133 ) ndimen, nx, ny_gl, nz_gl, lx, ly, lz, dx, dy, dz
-
+    WRITE (*, *) 'writing 134 and nmom'
     WRITE( ounit, 134 )
     WRITE( ounit, 135 ) nmom, nang, noct, w(1)
     WRITE( ounit, 136 )
+    WRITE (*, *) 'selecting on ndimen'
     SELECT CASE ( ndimen )
      CASE ( 1 )
       WRITE( ounit, 137 ) ( mu(i), i = 1, nang )
@@ -650,13 +674,19 @@ MODULE setup_module
       WRITE( ounit, 139 ) ( mu(i), eta(i), xi(i), i = 1, nang )
     END SELECT
 
+    WRITE (*, *) 'writing 140'
     WRITE( ounit, 140 )
+    WRITE (*, *) 'writing 141'
     WRITE( ounit, 141 ) mat_opt, nmat
-    WRITE( ounit, 142 )
+    WRITE (*, *) 'writing 142'
+    !WRITE( ounit, 142 )
+    WRITE (*, *) 'writing mat_opt'
     IF( mat_opt > 0 ) WRITE( ounit, 143 ) mis, mjs, mks, mie, mje, mke
 
+    WRITE (*, *) 'writing 144'
     WRITE( ounit, 144 )
     WRITE( ounit, 145 ) src_opt
+    WRITE (*, *) 'writing src_opt'
     IF ( src_opt < 3 ) THEN
       WRITE( ounit, 146 )
       WRITE( ounit, 147 ) qis, qjs, qks, qie, qje, qke
@@ -664,6 +694,7 @@ MODULE setup_module
       WRITE( ounit, 1471 )
     END IF
 
+    WRITE (*, *) 'writing 148'
     WRITE( ounit, 148 )
     WRITE( ounit, 149 ) ng
     DO j = 1, nmat
@@ -673,13 +704,19 @@ MODULE setup_module
                             i = 1, ng )
     END DO
 
+    WRITE (*, *) 'writing timedep'
     IF ( timedep == 1 ) THEN
+        WRITE(*, *) 'writing 153'
       WRITE( ounit, 153 )
-      WRITE( ounit, 154 ) tf, nsteps, dt
-      WRITE( ounit, 155 )
+      WRITE(*, *) 'writing 154'
+      !WRITE( ounit, 154 ) tf, nsteps, dt
+      WRITE(*,*) 'writing 155'
+      !WRITE( ounit, 155 )
+      WRITE(*, *) 'writing 156'
       WRITE( ounit, 156 ) ( i, v(i), i = 1, ng )
     END IF
 
+    WRITE (*, *) 'writing 157'
     WRITE( ounit, 157 )
     WRITE( ounit, 158 ) epsi, iitm, oitm, timedep, it_det, fluxp, fixup
 
@@ -694,6 +731,7 @@ MODULE setup_module
       WRITE( ounit, 186 ) nnested
     END IF
 
+    WRITE (*, *) 'writing 159'
     WRITE( ounit, 159 ) ( star, i = 1, 80 )
 !_______________________________________________________________________
 

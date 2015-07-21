@@ -10,7 +10,7 @@
 
 MODULE data_module
 
-  USE global_module, ONLY: i_knd, r_knd, zero
+  USE global_module, ONLY: i_knd, r_knd, zero, segment
 
   USE sn_module, ONLY: cmom
 
@@ -100,7 +100,7 @@ MODULE data_module
     
     IF ( timedep == 1 ) THEN
       array_size = ng
-      CALL ALLOCATE_ARRAY(array_size, cptr_in, 0)
+      CALL ALLOCATE(array_size, cptr_in, 0)
       ! so we are creating an apsace.
       ! and we are sharing it.
       !DO_SOMETHING ! allocate aspace here
@@ -118,7 +118,7 @@ MODULE data_module
 !_______________________________________________________________________
 
     array_size = nx*ny*nz
-    CALL ALLOCATE_ARRAY(array_size, cptr_in, 0)
+    CALL ALLOCATE(array_size, cptr_in, 0)
     CALL C_F_POINTER(cptr_in, mat, [nx,ny,nz])
 
     IF ( istat /= 0 ) RETURN
@@ -134,17 +134,17 @@ MODULE data_module
 
     IF ( src_opt < 3 ) THEN
       array_size = nx*ny*nz*ng
-      CALL ALLOCATE_ARRAY(array_size, cptr_in, 0)
+      CALL ALLOCATE(array_size, cptr_in, 0)
       CALL C_F_POINTER(cptr_in, qi, [nx,ny,nz,ng])  
       ALLOCATE(qim(0,0,0,0,0,0), STAT=istat )
       IF ( istat /= 0 ) RETURN
       qi = zero
     ELSE
       array_size = nx*ny*nz*ng
-      CALL ALLOCATE_ARRAY(array_size, cptr_in, 0)
+      CALL ALLOCATE(array_size, cptr_in, 0)
       CALL C_F_POINTER(cptr_in, qim, [nx,ny,nz,noct,ng])
       array_size = nx*ny*nz*ng*noct
-      CALL share_init(array_size, cptr_in, 0)
+      CALL share_init(array_size, cptr_in, 0, segment)
       CALL C_F_POINTER(cptr_in, qim, [nx,ny,nz,noct,ng])
       IF ( istat /= 0 ) RETURN
       qi = zero

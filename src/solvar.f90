@@ -99,9 +99,18 @@ MODULE solvar_module
     ierr = 0
 
     IF ( timedep == 1 ) THEN
+        WRITE (*,*) 'solvar_alloc: allocate timedep 1'
+        WRITE (*,*) 'nang ', nang
+        WRITE (*,*) 'nx ', nx 
+        WRITE (*,*) 'ny ', ny
+        WRITE (*,*) 'nz ', nz
+        WRITE (*,*) 'noct ', noct
+        WRITE (*,*) 'ng ', ng
+        WRITE (*, *) 'nang*nx*ny*nz*noct*ng ',nang*nx*ny*nz*noct*ng 
       ALLOCATE( ptr_in(nang,nx,ny,nz,noct,ng),                         &
         ptr_out(nang,nx,ny,nz,noct,ng), STAT=ierr )
-    ELSE
+ELSE
+    WRITE (*, *) 'solvar_alloc: allocate timedep != 1'
       ALLOCATE( ptr_in(0,0,0,0,0,0), ptr_out(0,0,0,0,0,0), STAT=ierr )
     END IF
     IF ( ierr /= 0 ) RETURN
@@ -116,9 +125,11 @@ MODULE solvar_module
 !_______________________________________________________________________
 
     array_size = nx*ny*nz*ng
-    CALL allocate_array(array_size, cptr_in)
+    WRITE (*, *) 'solvar_alloc: allocating array_size'
+    CALL allocate(array_size, cptr_in)
     CALL C_F_POINTER(cptr_in, flux, [nx,ny,nz,ng])
 
+    WRITE (*, *) 'allocate fluxpo'
     ALLOCATE( fluxpo(nx,ny,nz,ng),                  &
       fluxpi(nx,ny,nz,ng), fluxm(cmom-1,nx,ny,nz,ng), STAT=ierr )
     IF ( ierr /= 0 ) RETURN
@@ -132,6 +143,7 @@ MODULE solvar_module
 !   Allocate the source arrays.
 !_______________________________________________________________________
 
+    WRITE (*, *) 'allocate q2grp'
     ALLOCATE( q2grp(cmom,nx,ny,nz,ng), qtot(cmom,nx,ny,nz,ng),         &
       STAT=ierr )
     IF ( ierr /= 0 ) RETURN
@@ -143,6 +155,7 @@ MODULE solvar_module
 !   Allocate the cross section expanded to spatial mesh arrays
 !_______________________________________________________________________
 
+    WRITE (*, *) 'allocate t_xs'
     ALLOCATE( t_xs(nx,ny,nz,ng), a_xs(nx,ny,nz,ng),                    &
       s_xs(nmom,nx,ny,nz,ng), STAT=ierr )
     IF ( ierr /= 0 ) RETURN
@@ -155,6 +168,7 @@ MODULE solvar_module
 !   Working arrays
 !_______________________________________________________________________
 
+    WRITE (*, *) 'allocate psii'
     ALLOCATE( psii(nang,ny,nz,ng), psij(nang,ichunk,nz,ng),            &
       psik(nang,ichunk,ny,ng), STAT=ierr )
     IF ( ierr /= 0 ) RETURN
@@ -167,6 +181,7 @@ MODULE solvar_module
 !   PE boundary flux arrays
 !_______________________________________________________________________
 
+    WRITE (*, *) 'allocate jb_in'
     ALLOCATE( jb_in(nang,ichunk,nz,ng), jb_out(nang,ichunk,nz,ng),     &
       kb_in(nang,ichunk,ny,ng), kb_out(nang,ichunk,ny,ng), STAT=ierr )
     IF ( ierr /= 0 ) RETURN
@@ -180,6 +195,7 @@ MODULE solvar_module
 !   Leakage arrays
 !_______________________________________________________________________
 
+    WRITE (*, *) 'allocate flkx'
     ALLOCATE( flkx(nx+1,ny,nz,ng), flky(nx,ny+1,nz,ng),                &
       flkz(nx,ny,nz+1,ng), STAT=ierr )
     IF ( ierr /= 0 ) RETURN
@@ -209,7 +225,7 @@ MODULE solvar_module
     DEALLOCATE( psii, psij, psik )
     DEALLOCATE( jb_in, jb_out, kb_in, kb_out )
     DEALLOCATE( flkx, flky, flkz )
-    CALL deallocate_shared
+    CALL deallocate
 !_______________________________________________________________________
 !_______________________________________________________________________
 

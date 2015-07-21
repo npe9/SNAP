@@ -483,10 +483,13 @@ MODULE plib_module
     INTEGER(i_knd) :: ierr
 !_______________________________________________________________________
 
+    WRITE (*, *) 'bcast_i_scalar nproc ', nproc, ' comm ', comm
     IF ( nproc == 1 ) RETURN
     IF ( comm == MPI_COMM_NULL ) RETURN
 
+    WRITE (*, *) 'calling mpi_bcast'
     CALL MPI_BCAST ( value, 1, MPI_INTEGER, bproc, comm, ierr )
+    WRITE (*, *) 'called mpi_bcast value ', value, ' bproc ', bproc, '  comm ', comm, ' ierr ', ierr
 !_______________________________________________________________________
 !_______________________________________________________________________
 
@@ -513,6 +516,7 @@ MODULE plib_module
     INTEGER(i_knd) :: ierr
 !_______________________________________________________________________
 
+    WRITE (*, *) 'bcast_i_1d'
     IF ( nproc == 1 ) RETURN
     IF ( comm == MPI_COMM_NULL ) RETURN
 
@@ -543,7 +547,7 @@ MODULE plib_module
 
     INTEGER(i_knd) :: ierr
 !_______________________________________________________________________
-
+    WRITE (*, *) 'bcast_d_scalar'
     IF ( nproc == 1 ) RETURN
     IF ( comm == MPI_COMM_NULL ) RETURN
 
@@ -573,7 +577,7 @@ MODULE plib_module
 
     INTEGER(i_knd) :: ierr
 !_______________________________________________________________________
-
+    WRITE (*, *) 'bcast_d_1d'
     IF ( nproc == 1 ) RETURN
     IF ( comm == MPI_COMM_NULL ) RETURN
 

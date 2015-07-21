@@ -362,6 +362,7 @@ MODULE output_module
     CALL bcast ( ierr, comm_snap, root )
     IF ( ierr /= 0 ) THEN
       CALL print_error ( ounit, error )
+      WRITE (*, *) 'random error'
       CALL stop_run ( 3, 3, 0 )
     END IF
 !_______________________________________________________________________

@@ -57,33 +57,42 @@ SUBROUTINE translv
 ! type being requested.
 !_______________________________________________________________________
 
+    WRITE (*, *) 'wtiming'
   CALL wtime ( t1 )
 
   ierr = 0
   error = ' '
-
+    WRITE (*, *) 'geom_allocing'
   CALL geom_alloc ( nang, ng, ierr )
+  WRITE (*, *) 'glmaxing'
   CALL glmax ( ierr, comm_snap )
   IF ( ierr /= 0 ) THEN
     error = '***ERROR: GEOM_ALLOC: Allocation error of sweep parameters'
+    WRITE (*, *) 'geom alloc'
     CALL print_error ( ounit, error )
     CALL stop_run ( 3, 0, 0 )
   END IF
 
+    WRITE (*, *) 'solvar_allocing'
   CALL solvar_alloc ( ierr )
+  WRITE (*, *) 'glmaxing'
   CALL glmax ( ierr, comm_snap )
   IF ( ierr /= 0 ) THEN
     error = '***ERROR: SOLVAR_ALLOC: Allocation error of solution ' // &
             'arrays'
     CALL print_error ( ounit, error )
+    WRITE (*, *) 'solvar_alloc problem'
     CALL stop_run ( 3, 1, 0 )
   END IF
 
+    WRITE (*, *) 'control_allocing'
   CALL control_alloc ( ng, ierr )
+  WRITE (*, *) 'glmaxing'
   CALL glmax ( ierr, comm_snap )
   IF ( ierr /= 0 ) THEN
     error = '***ERROR: CONTROL_ALLOC: Allocation error of control ' // &
       'arrays'
+    WRITE (*, *) 'control_alloc error'
     CALL print_error ( ounit, error )
     CALL stop_run ( 3, 2, 0 )
   END IF
@@ -92,14 +101,18 @@ SUBROUTINE translv
 ! Call for setup of the mini-KBA diagonal map
 !_______________________________________________________________________
 
+    WRITE (*, *) 'diag setup'
   CALL diag_setup ( do_nested, ichunk, ierr )
+  WRITE (*, *) 'glmaxing'
   CALL glmax ( ierr, comm_snap )
   IF ( ierr /= 0 ) THEN
     error = '***ERROR: DIAG_SETUP: Allocation error of diag type array'
+    WRITE (*, *) 'diag_setup error'
     CALL print_error ( ounit, error )
     CALL stop_run ( 3, 3, 0 )
   END IF
 
+    WRITE (*, *) 'wtiming'
   CALL wtime ( t2 )
   tparam = tparam + t2 - t1
 !_______________________________________________________________________
@@ -113,7 +126,7 @@ SUBROUTINE translv
   IF ( iproc == root ) WRITE( ounit, 201) ( star, i = 1, 80 )
 
   tot_iits = 0
-
+    WRITE (*, *) 'time_looping'
   time_loop: DO cy = 1, nsteps
 
     CALL wtime ( t3 )
@@ -169,12 +182,13 @@ SUBROUTINE translv
 
     CALL wtime ( t4 )
     tparam = tparam + t4 - t3
-
+    WRITE (*, *) 'outer_looping'
     outer_loop: DO otno = 1, oitm
-
+    WRITE (*, *) 'out_loop wtiming'
       CALL wtime ( t5 )
-
+        
       IF ( iproc==root .AND. it_det==1 ) THEN
+    WRITE (*, *) 'writing 204'
         WRITE( ounit, 204 ) ( star, i = 1, 20 ), otno
       END IF
 !_______________________________________________________________________
@@ -184,6 +198,7 @@ SUBROUTINE translv
 !   geometric sweep parameters. Parallelize group loop with threads.
 !_______________________________________________________________________
 
+       WRITE (*, *) 'cross sectioning' 
   !$OMP PARALLEL DO SCHEDULE(DYNAMIC,1) DEFAULT(SHARED) PRIVATE(g)
       DO g = 1, ng
         CALL expxs_reg ( sigt(:,g), mat, t_xs(:,:,:,g) )
@@ -198,19 +213,23 @@ SUBROUTINE translv
 !     Perform an outer iteration. Add up inners. Check convergence.
 !_______________________________________________________________________
 
+    WRITE (*,*) 'outer iterationing'
       CALL wtime ( t6 )
       tparam = tparam + t6 - t5
 
+      WRITE (*, *) 'outering'
       CALL outer ( out_iits )
 
       cy_iits = cy_iits + out_iits
 
+      WRITE (*,*) 'writing 205'
       IF ( iproc == root ) WRITE( ounit, 205 ) otno, dfmxo, out_iits
 
       ! XXX: kludge make this portable
       ! why did I put this here?
       !CALL aspace_copy(aspace_id)
 
+      WRITE (*,*) 'should finish otrdone', otrdone
       IF ( otrdone ) EXIT outer_loop
 
     END DO outer_loop
@@ -218,27 +237,37 @@ SUBROUTINE translv
 !
 !   Print the time cycle details. Add time cycle iterations.
 !_______________________________________________________________________
+    WRITE (*,*) 'printing time cycle details'
 
     IF ( timedep == 1 ) THEN
+        WRITE (*,*) 'timedep was 1'
       IF ( otrdone ) THEN
+          WRITE (*,*) 'writing 206'
         IF ( iproc == root ) WRITE( ounit, 206 ) cy, time, otno, cy_iits
-      ELSE
-        IF ( iproc == root ) WRITE( ounit, 207 ) cy, time, otno, cy_iits
+    ELSE
+        WRITE (*, *) 'writing 207'
+        
+        !IF ( iproc == root ) WRITE( ounit, 207 ) cy, time, otno, cy_iits
       END IF
     ELSE
       IF ( otrdone ) THEN
+          WRITE (*,*) 'writing 208'
         IF ( iproc == root ) WRITE( ounit, 208 ) otno, cy_iits
-      ELSE
+    ELSE
+        WRITE (*,*) 'writing 209'
         IF ( iproc == root ) WRITE( ounit, 209 ) otno, cy_iits
       END IF
     END IF
 
     tot_iits = tot_iits + cy_iits
+    WRITE (*, *) 'PUBLISHING'
+    CALL publish
 
     IF ( .NOT. otrdone ) EXIT time_loop
 
   END DO time_loop
 
+  WRITE (*, *) 'time_looped'
   IF ( timedep==1 .AND. iproc == root ) THEN
     WRITE( ounit, 210 ) ( star, i = 1, 30 ), tot_iits
   END IF
