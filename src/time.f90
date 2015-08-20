@@ -86,35 +86,20 @@ MODULE time_module
     tinrmisc = tinners - ( tinrsrc + tsweeps )
     tslvmisc = tslv - ( tparam + totrsrc + tinners )
 
-    WRITE (*,*) '401'
     WRITE( ounit, 401 ) ( star, i = 1, 80 )
-    WRITE (*,*) '402'
     WRITE( ounit, 402 )
-    WRITE (*,*) '403'
     WRITE( ounit, 403 ) tparset
-    WRITE (*,*) '404'
     WRITE( ounit, 404 ) tinp
-    WRITE (*,*) '405'
     WRITE( ounit, 405 ) tset
-    WRITE (*,*) '406'
     WRITE( ounit, 406 ) tslv
-    WRITE (*,*) '407'
     !WRITE( ounit, 407 ) tparam
-    WRITE (*,*) '408'
     WRITE( ounit, 408 ) totrsrc
-    WRITE (*,*) '409'
     WRITE( ounit, 409 ) tinners
-    WRITE (*,*) '410'
     WRITE( ounit, 410 ) tinrsrc
-    WRITE (*,*) '411'
     WRITE( ounit, 411 ) tsweeps
-    WRITE (*,*) '412'
     WRITE( ounit, 412 ) tinrmisc
-    WRITE (*,*) '413'
     WRITE( ounit, 413 ) tslvmisc
-    WRITE (*,*) '414'
     WRITE( ounit, 414 ) tout
-    WRITE (*,*) 'done'
 !_______________________________________________________________________
 
     401 FORMAT( 10X, 'Timing Summary', /, 80A, / )

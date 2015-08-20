@@ -1,0 +1,52 @@
+Warning: no access to tty (Bad file descriptor).
+Thus no job control in this shell.
+running large problem on 2048 nodes, 49152 cores
+ Success! Done in a SNAP!
+##IPM2v0.xx########################################################
+#
+# command   : ./snap ./large-2048nodes.input ./large-2048nodes.output 
+# start     : Thu Jun 06 01:01:13 2013   host      : nid06150        
+# stop      : Thu Jun 06 01:18:13 2013   wallclock : 1022.67
+# mpi_tasks : 49152 on 2048 nodes        %comm     : 81.92
+# mem [GB]  : 45923.63                   gflop/sec : 4631.65
+#
+#           :       [total]        <avg>          min          max
+# wallclock :    50192131.27      1021.16      1019.90      1022.67 
+# MPI       :    41115198.03       836.49       821.83       842.92 
+# %wall     :
+#   MPI     :                      81.92        80.58        82.55 
+# #calls    :
+#   MPI     :    76339666944      1553134       780721      1561297
+# mem [GB]  :      45923.63         0.93         0.90         0.97 
+#
+#                             [time]        [count]        <%wall>
+# MPI_Recv                19829365.87     38165483520          39.51
+# MPI_Send                19441824.43     38165483520          38.73
+# MPI_Allreduce           1634349.71        7766016           3.26
+# MPI_Bcast                208061.12         491520           0.41
+# MPI_Barrier                1596.72          98304           0.00
+# MPI_Comm_rank                 0.13         196608           0.00
+# MPI_Comm_size                 0.05          49152           0.00
+# MPI_Init                      0.00          49152           0.00
+# MPI_Finalize                  0.00          49152           0.00
+#
+###################################################################
+Application 17946454 resources: utime ~51600116s, stime ~189798s, Rss ~1014592, inblocks ~969161233, outblocks ~41067478
+
+ + --------------------------------------------------------------------------
+ +        Job name: SNAP.large
+ +          Job Id: 3264417.sdb
+ +          System: hopper
+ +     Queued Time: Wed Jun  5 08:33:58 2013
+ +      Start Time: Wed Jun  5 18:00:28 2013
+ + Completion Time: Wed Jun  5 18:19:58 2013
+ +            User: mlang
+ +        MOM Host: nid05620
+ +           Queue: reg_med
+ +  Req. Resources: other=QSUBPID:27586:hopper10,walltime=00:55:00
+ +  Used Resources: cput=00:00:00,mem=17348kb,vmem=131180kb,walltime=00:19:29
+ +     Acct String: m888
+ +   PBS_O_WORKDIR: /global/homes/m/mlang/SNAP.trinity/large-try2
+ +     Submit Args: run-large.sh
+ + --------------------------------------------------------------------------
+

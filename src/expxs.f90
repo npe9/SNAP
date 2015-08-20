@@ -24,83 +24,92 @@ MODULE expxs_module
   SAVE
 
 
-  CONTAINS
+CONTAINS
 
 
   SUBROUTINE expxs_reg ( xs, map, cs )
 
-!-----------------------------------------------------------------------
-!
-! Expand one of the sig*(nmat,ng) arrays to a spatial mapping. xs is the
-! a generic cross section array, map is the material map, and cs is the
-! cross section expanded to the mesh.
-!
-!-----------------------------------------------------------------------
+    !-----------------------------------------------------------------------
+    !
+    ! Expand one of the sig*(nmat,ng) arrays to a spatial mapping. xs is the
+    ! a generic cross section array, map is the material map, and cs is the
+    ! cross section expanded to the mesh.
+    !
+    !-----------------------------------------------------------------------
 
     INTEGER(i_knd), DIMENSION(nx,ny,nz), INTENT(IN) :: map
 
     REAL(r_knd), DIMENSION(nmat), INTENT(IN) :: xs
 
     REAL(r_knd), DIMENSION(nx,ny,nz), INTENT(OUT) :: cs
-!_______________________________________________________________________
-!
-!   Local variables
-!_______________________________________________________________________
+    !_______________________________________________________________________
+    !
+    !   Local variables
+    !_______________________________________________________________________
 
     INTEGER(i_knd) :: i, j, k
-!_______________________________________________________________________
+    !_______________________________________________________________________
 
     cs = zero
-
+    call mcheck()
+   ! write (*,*) 'expsing cs size: ', SIZE(cs), 'xs size: ', SIZE(xs)
+  !  write (*, *) 'nz: ', nz, ' ny: ', ny, ' nx: ', nx
     DO k = 1, nz
-      DO j = 1, ny
-        DO i = 1, nx
-          cs(i,j,k) = xs(map(i,j,k))
-        END DO
-      END DO
+       DO j = 1, ny
+          DO i = 1, nx
+             !            write (*,*) 'xs',i,j,k
+             call mcheck()
+             !write (*,*) "i ", i, " j ",j, " k ",k
+             !write (*,*) "map(i,j,k) ", map(i,j,k)
+             !write (*,*) "xs(map(i,j,k)) ", xs(map(i,j,k))
+             !write (*,*) "cs(i,j,k) ", cs(i,j,k)
+             cs(i,j,k) = xs(map(i,j,k))
+             !call blowup()
+          END DO
+       END DO
     END DO
-!_______________________________________________________________________
-!_______________________________________________________________________
+    !_______________________________________________________________________
+    !_______________________________________________________________________
 
   END SUBROUTINE expxs_reg
 
 
   SUBROUTINE expxs_slgg ( scat, map, cs )
 
-!-----------------------------------------------------------------------
-!
-! Expand the slgg(nmat,nmom,ng,ng) array to a spatial mapping. scat
-! is the slgg matrix for a single h->g group coupling, map is the
-! material map, and cs is the scattering matrix expanded to the mesh.
-!
-!-----------------------------------------------------------------------
+    !-----------------------------------------------------------------------
+    !
+    ! Expand the slgg(nmat,nmom,ng,ng) array to a spatial mapping. scat
+    ! is the slgg matrix for a single h->g group coupling, map is the
+    ! material map, and cs is the scattering matrix expanded to the mesh.
+    !
+    !-----------------------------------------------------------------------
 
     INTEGER(i_knd), DIMENSION(nx,ny,nz), INTENT(IN) :: map
 
     REAL(r_knd), DIMENSION(nmat,nmom), INTENT(IN) :: scat
 
     REAL(r_knd), DIMENSION(nmom,nx,ny,nz), INTENT(OUT) :: cs
-!_______________________________________________________________________
-!
-!   Local variables
-!_______________________________________________________________________
+    !_______________________________________________________________________
+    !
+    !   Local variables
+    !_______________________________________________________________________
 
     INTEGER(i_knd) :: l, i, j, k
-!_______________________________________________________________________
+    !_______________________________________________________________________
 
     cs = zero
 
     DO k = 1, nz
-      DO j = 1, ny
-        DO i = 1, nx
-          DO l = 1, nmom
-            cs(l,i,j,k) = scat(map(i,j,k),l)
+       DO j = 1, ny
+          DO i = 1, nx
+             DO l = 1, nmom
+                cs(l,i,j,k) = scat(map(i,j,k),l)
+             END DO
           END DO
-        END DO
-      END DO
+       END DO
     END DO
-!_______________________________________________________________________
-!_______________________________________________________________________
+    !_______________________________________________________________________
+    !_______________________________________________________________________
 
   END SUBROUTINE expxs_slgg
 

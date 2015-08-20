@@ -483,13 +483,13 @@ MODULE plib_module
     INTEGER(i_knd) :: ierr
 !_______________________________________________________________________
 
-    WRITE (*, *) 'bcast_i_scalar nproc ', nproc, ' comm ', comm
+    !WRITE (*, *) 'bcast_i_scalar nproc ', nproc, ' comm ', comm
     IF ( nproc == 1 ) RETURN
     IF ( comm == MPI_COMM_NULL ) RETURN
 
-    WRITE (*, *) 'calling mpi_bcast'
+    !WRITE (*, *) 'calling mpi_bcast'
     CALL MPI_BCAST ( value, 1, MPI_INTEGER, bproc, comm, ierr )
-    WRITE (*, *) 'called mpi_bcast value ', value, ' bproc ', bproc, '  comm ', comm, ' ierr ', ierr
+    !WRITE (*, *) 'called mpi_bcast value ', value, ' bproc ', bproc, '  comm ', comm, ' ierr ', ierr
 !_______________________________________________________________________
 !_______________________________________________________________________
 
@@ -516,7 +516,7 @@ MODULE plib_module
     INTEGER(i_knd) :: ierr
 !_______________________________________________________________________
 
-    WRITE (*, *) 'bcast_i_1d'
+    !WRITE (*, *) 'bcast_i_1d'
     IF ( nproc == 1 ) RETURN
     IF ( comm == MPI_COMM_NULL ) RETURN
 
@@ -547,7 +547,7 @@ MODULE plib_module
 
     INTEGER(i_knd) :: ierr
 !_______________________________________________________________________
-    WRITE (*, *) 'bcast_d_scalar'
+    !WRITE (*, *) 'bcast_d_scalar'
     IF ( nproc == 1 ) RETURN
     IF ( comm == MPI_COMM_NULL ) RETURN
 
@@ -577,7 +577,7 @@ MODULE plib_module
 
     INTEGER(i_knd) :: ierr
 !_______________________________________________________________________
-    WRITE (*, *) 'bcast_d_1d'
+    !WRITE (*, *) 'bcast_d_1d'
     IF ( nproc == 1 ) RETURN
     IF ( comm == MPI_COMM_NULL ) RETURN
 
@@ -769,15 +769,15 @@ MODULE plib_module
 
     max_threads = OMP_GET_MAX_THREADS()
 
-    WRITE(*,*)  max_threads, nthreads, nthreads > max_threads, ierr
+    !WRITE(*,*)  max_threads, nthreads, nthreads > max_threads, ierr
     IF ( nthreads > max_threads ) THEN
       ierr = 1
       nthreads = max_threads
     END IF
-    WRITE(*,*)  max_threads, nthreads, nthreads > max_threads, ierr
+    !WRITE(*,*)  max_threads, nthreads, nthreads > max_threads, ierr
 
     CALL glmax ( ierr, comm_snap )
-    WRITE(*,*)  max_threads, nthreads, nthreads > max_threads, ierr
+    !WRITE(*,*)  max_threads, nthreads, nthreads > max_threads, ierr
 
     IF ( ierr /= 0 ) THEN
       error = '*WARNING: PINIT_OMP: NTHREADS>MAX_THREADS; reset to' // &

@@ -95,10 +95,10 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_snap_kitten_tcasm_OBJECTS = analyze.$(OBJEXT) control.$(OBJEXT) \
-	data.$(OBJEXT) dealloc.$(OBJEXT) dim1_sweep.$(OBJEXT) \
-	dim3_sweep.$(OBJEXT) expxs.$(OBJEXT) geom.$(OBJEXT) \
-	global.$(OBJEXT) inner.$(OBJEXT) input.$(OBJEXT) mms.$(OBJEXT) \
+am_snap_kitten_tcasm_OBJECTS = control.$(OBJEXT) data.$(OBJEXT) \
+	dealloc.$(OBJEXT) dim1_sweep.$(OBJEXT) dim3_sweep.$(OBJEXT) \
+	expxs.$(OBJEXT) geom.$(OBJEXT) global.$(OBJEXT) \
+	inner.$(OBJEXT) input.$(OBJEXT) mms.$(OBJEXT) \
 	octsweep.$(OBJEXT) outer.$(OBJEXT) output.$(OBJEXT) \
 	plib.$(OBJEXT) setup.$(OBJEXT) snap_main.$(OBJEXT) \
 	sn.$(OBJEXT) solvar.$(OBJEXT) sweep.$(OBJEXT) time.$(OBJEXT) \
@@ -287,7 +287,7 @@ top_builddir = .
 top_srcdir = .
 AUTOMAKE_OPTIONS = foreign
 snap_kitten_tcasm_LDFLAGS = -static -Wl,--whole-archive,--no-whole-archive -fopenmp -fno-backtrace
-snap_kitten_tcasm_SOURCES = analyze.f90 control.f90 data.f90 dealloc.f90 dim1_sweep.f90 dim3_sweep.f90 expxs.f90 geom.f90 global.f90 inner.f90 input.f90 mms.f90 octsweep.f90 outer.f90 output.f90 plib.f90 setup.f90 snap_main.f90 sn.f90 solvar.f90 sweep.f90 time.f90 translv.f90 utils.f90 version.f90 analytics.c gfortran_iargc.c mpidummy.c syscalls-kitten-tcasm-enclave.c
+snap_kitten_tcasm_SOURCES = control.f90 data.f90 dealloc.f90 dim1_sweep.f90 dim3_sweep.f90 expxs.f90 geom.f90 global.f90 inner.f90 input.f90 mms.f90 octsweep.f90 outer.f90 output.f90 plib.f90 setup.f90 snap_main.f90 sn.f90 solvar.f90 sweep.f90 time.f90 translv.f90 utils.f90 version.f90 analytics.c gfortran_iargc.c mpidummy.c syscalls-kitten-tcasm-enclave.c
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 

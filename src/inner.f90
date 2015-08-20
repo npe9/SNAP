@@ -120,13 +120,15 @@ MODULE inner_module
 !   Compute the within-group scattering source. Thread over groups.
 !_______________________________________________________________________
 
+    write (*,*) 'inr_src: before scatter flux:', flux
   !$OMP PARALLEL DO SCHEDULE(DYNAMIC,1) DEFAULT(SHARED) PRIVATE(g)
     DO g = 1, ng
       IF ( inrdone(g) ) CYCLE
       CALL inr_src_scat ( q2grp(:,:,:,:,g), s_xs(:,:,:,:,g),           &
         flux(:,:,:,g), fluxm(:,:,:,:,g), qtot(:,:,:,:,g) )
     END DO
-  !$OMP END PARALLEL DO
+    !$OMP END PARALLEL DO
+    write (*,*) 'inr_src: within group flux:', flux
 !_______________________________________________________________________
 !_______________________________________________________________________
 

@@ -1,0 +1,27 @@
+&invar
+  nthreads=1
+  npey=1
+  npez=1
+  ichunk=8
+  ndimen=3
+  nx=4
+  lx=1
+  ny=4
+  ly=1
+  nz=4
+  lz=1
+  nmom=1
+  ng=2
+  nang=3
+  mat_opt=1
+  src_opt=0
+  timedep=1
+  it_det=0
+  tf=10
+  nsteps=10
+  iitm=1
+  oitm=1
+  epsi=1.E-4
+  fluxp=0
+  scatp=0
+/

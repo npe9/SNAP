@@ -192,7 +192,8 @@ MODULE outer_module
 !   mesh one scattering order at a time. Start with first. Then compute
 !   source moment with flux.
 !_______________________________________________________________________
-
+   !write (*,*) 'calling expxs_reg from outer 196' 
+ 
     CALL expxs_reg ( cs(:,1), map, tc )
 
     q(1,:,:,:) = q(1,:,:,:) + tc*f
@@ -205,6 +206,8 @@ MODULE outer_module
     mom = 2
 
     DO l = 2, nmom
+
+       !write (*,*) 'calling expxs_reg from outer 209' 
       CALL expxs_reg ( cs(:,l), map, tc )
       DO m = 1, lma(l)
         q(mom,:,:,:) = q(mom,:,:,:) + tc*fm(mom-1,:,:,:)

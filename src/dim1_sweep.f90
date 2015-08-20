@@ -207,7 +207,8 @@ MODULE dim1_sweep_module
       IF ( id == 1 ) THEN
         flux(i) = zero
         fluxm(:,i) = zero
-      END IF
+     END IF
+     write (*,*) 'dim1_seep flux zero: flux: ', flux
 !_______________________________________________________________________
 !
 !     Compute the flux moments
@@ -217,6 +218,7 @@ MODULE dim1_sweep_module
       DO l = 1, cmom-1
         fluxm(l,i) = fluxm(l,i) + SUM( ec(:,l+1)*w*psi )
       END DO
+      write (*,*) 'dim1_seep flux moments: flux: ', flux
 !_______________________________________________________________________
 !
 !     Calculate min and max scalar fluxes (not used elsewhere currently)

@@ -1,0 +1,52 @@
+Warning: no access to tty (Bad file descriptor).
+Thus no job control in this shell.
+running small problem on 4 nodes, 96 cores
+ Success! Done in a SNAP!
+##IPM2v0.xx########################################################
+#
+# command   : ./snap ./small-4nodes.input ./small-4nodes.output 
+# start     : Thu Jun 06 16:14:09 2013   host      : nid01186        
+# stop      : Thu Jun 06 16:14:29 2013   wallclock : 19.95
+# mpi_tasks : 96 on 4 nodes              %comm     : 29.90
+# mem [GB]  : 6.37                       gflop/sec : 28.69
+#
+#           :       [total]        <avg>          min          max
+# wallclock :       1914.74        19.95        19.94        19.95 
+# MPI       :        572.48         5.96         3.88         6.35 
+# %wall     :
+#   MPI     :                      29.90        19.44        31.85 
+# #calls    :
+#   MPI     :      33690976       350947       195953       391761
+# mem [GB]  :          6.37         0.07         0.06         0.07 
+#
+#                             [time]        [count]        <%wall>
+# MPI_Recv                    292.04       16836992          15.25
+# MPI_Bcast                   153.06            960           7.99
+# MPI_Send                     89.17       16836992           4.66
+# MPI_Allreduce                38.19          15168           1.99
+# MPI_Barrier                   0.02            192           0.00
+# MPI_Comm_rank                 0.00            384           0.00
+# MPI_Comm_size                 0.00             96           0.00
+# MPI_Init                      0.00             96           0.00
+# MPI_Finalize                  0.00             96           0.00
+#
+###################################################################
+Application 17956855 resources: utime ~2152s, stime ~74s, Rss ~74236, inblocks ~1890188, outblocks ~78944
+
+ + --------------------------------------------------------------------------
+ +        Job name: SNAP.small-src_opt0-16x16x16
+ +          Job Id: 3269039.sdb
+ +          System: hopper
+ +     Queued Time: Thu Jun  6 09:12:42 2013
+ +      Start Time: Thu Jun  6 09:13:44 2013
+ + Completion Time: Thu Jun  6 09:14:33 2013
+ +            User: mlang
+ +        MOM Host: nid03841
+ +           Queue: reg_1hour
+ +  Req. Resources: other=QSUBPID:43729:hopper10,walltime=00:30:00
+ +  Used Resources: cput=00:00:00,mem=17460kb,vmem=131500kb,walltime=00:00:48
+ +     Acct String: m888
+ +   PBS_O_WORKDIR: /global/homes/m/mlang/SNAP.trinity/small-try2
+ +     Submit Args: run-small.sh
+ + --------------------------------------------------------------------------
+

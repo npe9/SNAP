@@ -86,7 +86,7 @@ MODULE output_module
     error = ' '
 
     IF ( iproc == root ) THEN
-
+       write (*,*) '301'
       WRITE( ounit, 301 ) ( star, i = 1, 80 )
 
       ALLOCATE( fprnt(nx,ny_gl), STAT=ierr )
@@ -94,6 +94,7 @@ MODULE output_module
 
     END IF
 
+    write (*,*) 'bcast'
     CALL bcast ( ierr, comm_snap, root )
     IF ( ierr /= 0 ) THEN
       error = '***ERROR: OUTPUT: Allocation error'
@@ -118,7 +119,7 @@ MODULE output_module
 !
 !   Loops over groups. Send/Recv message. Print flux.
 !_______________________________________________________________________
-
+    write (*,*) 'g_loop'
     g_loop: DO g = 1, ng
 !_______________________________________________________________________
 !
@@ -140,6 +141,7 @@ MODULE output_module
 
         co(1) = (k-1)/nz
         fprnt(:,1:ny) = flux(:,:,kloc,g)
+        write (*,*) '302'
         WRITE( ounit, 302 ) ( star, i = 1, 35 ), g, k,                 &
           ( star, i = 1, 35 )
 
@@ -155,16 +157,20 @@ MODULE output_module
         DO i = 1, nx, 6
           is = i + 6 - 1
           IF ( is > nx ) is = nx
+          write (*,*) '303'
           WRITE( ounit, FMT=303, ADVANCE='NO' )
+          write (*,*) '304'
           DO ii = i, is
             WRITE( ounit, FMT=304, ADVANCE='NO' ) ii
-          END DO
-          WRITE( ounit, FMT=305, ADVANCE='YES' )
+         END DO
+         write (*,*) '305'
+         WRITE( ounit, FMT=305, ADVANCE='YES' )
+         write (*,*) '306'
           DO j = ny_gl, 1, -1
             WRITE( ounit, 306 ) j, ( fprnt(ii,j), ii = i, is )
           END DO
         END DO
-
+        write (*,*) '307'
         WRITE( ounit, 307 ) ( star, i = 1, 80 )
 
       END IF
@@ -180,7 +186,7 @@ MODULE output_module
 !
 !   Print flux to file if requested
 !_______________________________________________________________________
-
+    write (*,*) 'writing flux'
     IF ( fluxp > 0 ) CALL output_flux_file ( klb, kub )
 !_______________________________________________________________________
 !
@@ -192,7 +198,7 @@ MODULE output_module
     CALL wtime ( t2 )
     tout = t2 - t1
 !_______________________________________________________________________
-
+    write (*,*) 'got to formats'
     301 FORMAT( 10X, 'Calculation Final Scalar Flux Solution', /, 80A )
     302 FORMAT( /, 1X, 35A, /, 2X, 'Group= ', I3, 2X, ' Z Mid-Plane= ',&
                 I4, /, 1X, 35A )
@@ -203,7 +209,7 @@ MODULE output_module
     307 FORMAT( /, 80A, / )
 !_______________________________________________________________________
 !_______________________________________________________________________
-
+    write (*,*) 'finished output'
   END SUBROUTINE output
 
 

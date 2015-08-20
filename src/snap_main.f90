@@ -102,7 +102,6 @@ PROGRAM snap_main
 
   ierr = 0
   error = ' '
-
   WRITE (*,*) 'piniting'
   CALL pinit ( t1 )
 
@@ -201,18 +200,18 @@ WRITE (*, *) 'second bcasting'
 !
 ! Setup problem
 !_______________________________________________________________________
-  write (*,*) "setting up" 
+  !write (*,*) "setting up" 
   CALL setup
   
-  WRITE (*,*) "set up"
+  !WRITE (*,*) "set up"
 !_______________________________________________________________________
 !
 ! Call for the problem solution
 !_______________________________________________________________________
 
-    WRITE (*, *) 'translving'
+  !  WRITE (*, *) 'translving'
   CALL translv
-  WRITE (*, *) 'translved'
+ WRITE (*, *) 'translved'
 !_______________________________________________________________________
 !
 ! Output the results. Print the timing summary.
@@ -221,17 +220,18 @@ WRITE (*, *) 'second bcasting'
     WRITE (*, *) 'outputting'
   CALL output
   WRITE (*, *) 'outputted'
-  WRITE (*, *) 'time summing'
+!  WRITE (*, *) 'time summing'
   IF ( iproc == root ) CALL time_summ
-  WRITE (*, *) 'time summed'
+!  WRITE (*, *) 'time summed'
 !_______________________________________________________________________
 !
 ! Final cleanup: deallocate, close output file, end the program
 !_______________________________________________________________________
 
+    WRITE (*, *) 'deallocating input'
   CALL dealloc_input ( 3 )
+    WRITE (*, *) 'deallocating solve'
   CALL dealloc_solve ( 3 )
-
   WRITE (*, *) 'wtiming'
   CALL wtime ( t5 )
   WRITE (*, *) 'wtimed'
@@ -247,7 +247,7 @@ WRITE (*, *) 'second bcasting'
   CALL finalize
   WRITE (*, *) 'finalized'
   WRITE (*, *) 'closing file'
-  CALL close_file ( ounit, ierr, error )
+  !CALL close_file ( ounit, ierr, error )
   WRITE (*, *) 'closed file'
   CALL bcast ( ierr, comm_snap, root )
   IF ( ierr /= 0 ) THEN
