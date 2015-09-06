@@ -79,7 +79,7 @@ PROGRAM snap_main
   USE plib_module, ONLY: pinit, iproc, root, comm_snap, bcast,         &
     pcomm_set, pinit_omp
 
-  USE control_module, ONLY: otrdone
+  USE control_module, ONLY: otrdone, swp_typ
 
   IMPLICIT NONE
 !_______________________________________________________________________
@@ -142,11 +142,7 @@ PROGRAM snap_main
 !!  WRITE (*,*) 'ierr checking'
   IF ( ierr /= 0 ) THEN
     CALL print_error ( 0, error )
-!!    WRITE (*, *) 'got an ierr!'
-!!    WRITE (*, *) 'got an ierr!'
-!!    WRITE (*, *) 'got an ierr!'
-!!    WRITE (*, *) 'got an ierr!'
-    CALL stop_run ( 0, 0, 0 )
+    CALL stop_run ( 0, 0, 0, 0 )
   END IF
 ! so how do we change this?
 ! can do I have to do it this way?
@@ -172,7 +168,7 @@ PROGRAM snap_main
 !!      WRITE (*, *) 'bcast error'
 !!      WRITE (*, *) 'bcast error'
     CALL print_error ( 0, error )
-    CALL stop_run ( 0, 0, 0 )
+    CALL stop_run ( 0, 0, 0, 0 )
   END IF
   IF (ofile == 'stdout') THEN
     ounit = 6
@@ -190,7 +186,7 @@ END IF
 !!      WRITE (*, *) 'second bcast err'
 !!      WRITE (*, *) 'second bcast err'
     CALL print_error ( 0, error )
-    CALL stop_run ( 0, 0, 0 )
+    CALL stop_run ( 0, 0, 0, 0 )
   END IF
 !_______________________________________________________________________
 !
@@ -219,7 +215,7 @@ END IF
   CALL bcast ( ierr, comm_snap, root )
   IF ( ierr /= 0 ) THEN
     CALL print_error ( ounit, error )
-    CALL stop_run ( 0, 0, 0 )
+    CALL stop_run ( 0, 0, 0, 0 )
   END IF
 !_______________________________________________________________________
 !
@@ -303,15 +299,8 @@ END IF
 !!    WRITE (*, *) 'deallocating input'
 !!    WRITE (*, *) 'deallocating input'
   CALL dealloc_input ( 3 )
-!!    WRITE (*, *) 'deallocating solve'
-!!    WRITE (*, *) 'deallocating solve'
-!!    WRITE (*, *) 'deallocating solve'
-!!    WRITE (*, *) 'deallocating solve'
-  CALL dealloc_solve ( 3 )
-!!  WRITE (*, *) 'wtiming'
-!!  WRITE (*, *) 'wtiming'
-!!  WRITE (*, *) 'wtiming'
-!!  WRITE (*, *) 'wtiming'
+  CALL dealloc_solve ( swp_typ, 3 )
+
   CALL wtime ( t5 )
 !!  WRITE (*, *) 'wtimed'
 !!  WRITE (*, *) 'wtimed'
@@ -349,11 +338,7 @@ END IF
   CALL bcast ( ierr, comm_snap, root )
   IF ( ierr /= 0 ) THEN
     CALL print_error ( 0, error )
-!!    WRITE (*,*) 'third bcast error!'
-!!    WRITE (*,*) 'third bcast error!'
-!!    WRITE (*,*) 'third bcast error!'
-!!    WRITE (*,*) 'third bcast error!'
-    CALL stop_run ( 0, 0, 0 )
+    CALL stop_run ( 1, 0, 0, 0 )
   END IF
 
 !!  WRITE (*, *) 'otrdone'
@@ -361,17 +346,9 @@ END IF
 !!  WRITE (*, *) 'otrdone'
 !!  WRITE (*, *) 'otrdone'
   IF ( otrdone ) THEN
-!!      WRITE (*, *) 'otrdone 1 error'
-!!      WRITE (*, *) 'otrdone 1 error'
-!!      WRITE (*, *) 'otrdone 1 error'
-!!      WRITE (*, *) 'otrdone 1 error'
-    CALL stop_run ( 0, 0, 1 )
-ELSE
-!!    WRITE (*,*) 'otrdone 2 error'
-!!    WRITE (*,*) 'otrdone 2 error'
-!!    WRITE (*,*) 'otrdone 2 error'
-!!    WRITE (*,*) 'otrdone 2 error'
-    CALL stop_run ( 0, 0, 2 )
+    CALL stop_run ( 1, 0, 0, 1 )
+  ELSE
+    CALL stop_run ( 1, 0, 0, 2 )
   END IF
 !_______________________________________________________________________
 

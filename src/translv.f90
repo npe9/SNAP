@@ -5,36 +5,40 @@ SUBROUTINE translv
 ! Solution driver. Contains the time and outer loops. Calls for outer
 ! iteration work. Checks convergence and handles eventual output.
 !
-!-----------------------------------------------------------------------
+  !!  write (*,*) 'got past 208'
+  !  write (*,*) 'got past 208'
+209 FORMAT( /, 2X, '***UNCONVERGED*** Stopping Iterations!!', /, 2X, &
+-----------------------------------------------------------------------
 
   USE global_module, ONLY: i_knd, r_knd, ounit, zero, half, one, two
 
   USE plib_module, ONLY: glmax, comm_snap, iproc, root, thread_num,    &
-    ichunk, do_nested
+    ichunk, nthreads, nnested
 
   USE geom_module, ONLY: geom_alloc, geom_dealloc, dinv, param_calc,   &
-    nx, ny_gl, nz_gl, diag_setup
+    nx, ny_gl, nz_gl
 
-  USE sn_module, ONLY: nang, noct, mu, eta, xi
+  USE sn_module, ONLY: nang, noct, mu, eta, xi, nmom
 
   USE data_module, ONLY: ng, v, vdelt, mat, sigt, siga, slgg, src_opt, &
     qim
 
   USE control_module, ONLY: nsteps, timedep, dt, oitm, otrdone,        &
-    control_alloc, control_dealloc, dfmxo, it_det
+    control_alloc, control_dealloc, dfmxo, it_det, popout, swp_typ
 
   USE utils_module, ONLY: print_error, stop_run
 
   USE solvar_module, ONLY: solvar_alloc, ptr_in, ptr_out, t_xs, a_xs,  &
-    s_xs, flux, fluxm
+    s_xs, flux0, fluxm
 
-  USE expxs_module, ONLY: expxs_reg, expxs_slgg
+  USE expxs_module, ONLY: expxs_reg
 
   USE outer_module, ONLY: outer
 
   USE time_module, ONLY: tslv, wtime, tgrind, tparam
 
   USE ISO_C_BINDING
+  USE analyze_module, ONLY: pop_calc
 
   IMPLICIT NONE
 !_______________________________________________________________________
@@ -46,9 +50,9 @@ SUBROUTINE translv
 
   CHARACTER(LEN=64) :: error
 
-  INTEGER(i_knd) :: cy, otno, ierr, g, i, tot_iits, cy_iits, out_iits
+  INTEGER(i_knd) :: cy, otno, ierr, g, l, i, tot_iits, cy_iits, out_iits
 
-  REAL(r_knd) :: sf, time, t1, t2, t3, t4, t5, t6, t7, tmp
+  REAL(r_knd) :: sf, time, t1, t2, t3, t4, t5, tmp
 
   REAL(r_knd), DIMENSION(:,:,:,:,:,:), POINTER :: ptr_tmp
 !_______________________________________________________________________
@@ -65,15 +69,8 @@ SUBROUTINE translv
 
   ierr = 0
   error = ' '
-!!    !WRITE (*, *) 'geom_allocing'
-!!    !WRITE (*, *) 'geom_allocing'
-!!    !WRITE (*, *) 'geom_allocing'
-!!    !WRITE (*, *) 'geom_allocing'
-  CALL geom_alloc ( nang, ng, ierr )
-!!  !WRITE (*, *) 'glmaxing'
-!!  !WRITE (*, *) 'glmaxing'
-!!  !WRITE (*, *) 'glmaxing'
-!!  !WRITE (*, *) 'glmaxing'
+
+  CALL geom_alloc ( nang, ng, swp_typ, ichunk, ierr )
   CALL glmax ( ierr, comm_snap )
   IF ( ierr /= 0 ) THEN
     error = '***ERROR: GEOM_ALLOC: Allocation error of sweep parameters'
@@ -82,7 +79,7 @@ SUBROUTINE translv
 !!    !WRITE (*, *) 'geom alloc'
 !!    !WRITE (*, *) 'geom alloc'
     CALL print_error ( ounit, error )
-    CALL stop_run ( 3, 0, 0 )
+    CALL stop_run ( 1, 3, 0, 0 )
   END IF
 
 !!    !WRITE (*, *) 'solvar_allocing'
@@ -99,11 +96,7 @@ SUBROUTINE translv
     error = '***ERROR: SOLVAR_ALLOC: Allocation error of solution ' // &
             'arrays'
     CALL print_error ( ounit, error )
-!!    !WRITE (*, *) 'solvar_alloc problem'
-!!    !WRITE (*, *) 'solvar_alloc problem'
-!!    !WRITE (*, *) 'solvar_alloc problem'
-!!    !WRITE (*, *) 'solvar_alloc problem'
-    CALL stop_run ( 3, 1, 0 )
+    CALL stop_run ( 1, 3, 1, 0 )
   END IF
 
 !!    !WRITE (*, *) 'control_allocing'
@@ -118,37 +111,9 @@ SUBROUTINE translv
   CALL glmax ( ierr, comm_snap )
   IF ( ierr /= 0 ) THEN
     error = '***ERROR: CONTROL_ALLOC: Allocation error of control ' // &
-      'arrays'
-!!    !WRITE (*, *) 'control_alloc error'
-!!    !WRITE (*, *) 'control_alloc error'
-!!    !WRITE (*, *) 'control_alloc error'
-!!    !WRITE (*, *) 'control_alloc error'
+            'arrays'
     CALL print_error ( ounit, error )
-    CALL stop_run ( 3, 2, 0 )
-  END IF
-!_______________________________________________________________________
-!
-! Call for setup of the mini-KBA diagonal map
-!_______________________________________________________________________
-
-!!    WRITE (*, *) 'diag setup'
-!!    WRITE (*, *) 'diag setup'
-!!    WRITE (*, *) 'diag setup'
-!!    WRITE (*, *) 'diag setup'
-  CALL diag_setup ( do_nested, ichunk, ierr )
-!!  WRITE (*, *) 'glmaxing'
-!!  WRITE (*, *) 'glmaxing'
-!!  WRITE (*, *) 'glmaxing'
-!!  WRITE (*, *) 'glmaxing'
-  CALL glmax ( ierr, comm_snap )
-  IF ( ierr /= 0 ) THEN
-    error = '***ERROR: DIAG_SETUP: Allocation error of diag type array'
-!!    WRITE (*, *) 'diag_setup error'
-!!    WRITE (*, *) 'diag_setup error'
-!!    WRITE (*, *) 'diag_setup error'
-!!    WRITE (*, *) 'diag_setup error'
-    CALL print_error ( ounit, error )
-    CALL stop_run ( 3, 3, 0 )
+    CALL stop_run ( 1, 3, 2, 0 )
   END IF
 
 !!    WRITE (*, *) 'wtiming'
@@ -165,7 +130,10 @@ SUBROUTINE translv
 ! static for proper multiplication in octsweep.
 !_______________________________________________________________________
 
-  IF ( iproc == root ) WRITE( ounit, 201) ( star, i = 1, 80 )
+  IF ( iproc == root ) THEN
+    WRITE( *, 201)     ( star, i = 1, 80 )
+    WRITE( ounit, 201) ( star, i = 1, 80 )
+  END IF
 
   tot_iits = 0
 !!    WRITE (*, *) 'time_looping'
@@ -182,21 +150,11 @@ SUBROUTINE translv
 !    write (*,*) 'checking timedep ', timedep
 !    write (*,*) 'checking timedep ', timedep
     IF ( timedep == 1 ) THEN
-       IF ( iproc == root ) WRITE( ounit, 202 ) ( star, i = 1, 30 ), cy
-!       write (*,*) 'vdelt before div', vdelt
-!       write (*,*) 'vdelt before div', vdelt
-       if (isnan(vdelt(1))) stop 'vdelt is nan'
-!       write (*,*) 'two ', two
-!       write (*,*) 'two ', two
-!       write (*,*) 'dt ', dt
-!       write (*,*) 'dt ', dt
-!       write (*,*) 'v ', v
-!       write (*,*) 'v ', v
-       vdelt = two / ( dt * v )
-!       write (*,*) 'vdelt after div', vdelt
-!       write (*,*) 'vdelt after div', vdelt
-       if (isnan(vdelt(1))) stop 'vdelt is nan'
-
+      IF ( iproc == root ) THEN
+        WRITE( *, 202 )     ( star, i = 1, 30 ), cy
+        WRITE( ounit, 202 ) ( star, i = 1, 30 ), cy
+      END IF
+      vdelt = two / ( dt * v )
       time = dt * ( REAL( cy, r_knd ) - half )
     END IF
 
@@ -205,6 +163,28 @@ SUBROUTINE translv
       ptr_out => ptr_in
       ptr_in  => ptr_tmp
     END IF
+!_______________________________________________________________________
+!
+!   Prepare some cross sections: total, in-group scattering, absorption.
+!   Keep in the time loop for better consistency with PARTISN. Set up
+!   geometric sweep parameters. Reset flux moments to zero at start of
+!   each time step. Parallelize group loop with threads.
+!_______________________________________________________________________
+
+  !$OMP PARALLEL DO SCHEDULE(STATIC,1) NUM_THREADS(nthreads*nnested)   &
+  !$OMP& DEFAULT(SHARED) PRIVATE(g,l)
+    DO g = 1, ng
+      CALL expxs_reg ( siga(:,g), mat, a_xs(:,:,:,g) )
+      CALL expxs_reg ( sigt(:,g), mat, t_xs(:,:,:,g) )
+      CALL param_calc ( nang, ichunk, mu, eta, xi, t_xs(:,:,:,g),      &
+        vdelt(g), dinv(:,:,:,:,:,g) )
+      DO l = 1, nmom
+        CALL expxs_reg ( slgg(:,l,g,g), mat, s_xs(:,:,:,l,g) )
+      END DO
+      flux0(:,:,:,g) = zero
+      fluxm(:,:,:,:,g) = zero
+    END DO
+  !$OMP END PARALLEL DO
 !_______________________________________________________________________
 !
 !   Scale the manufactured source for time
@@ -220,18 +200,6 @@ SUBROUTINE translv
     END IF
 !_______________________________________________________________________
 !
-!   Zero out flux arrays. Use threads when available.
-!_______________________________________________________________________
-!    write (*,*) 'zeroing flux arrays'
-!    write (*,*) 'zeroing flux arrays'
-  !$OMP PARALLEL DO SCHEDULE(DYNAMIC,1) DEFAULT(SHARED) PRIVATE(g)
-    DO g = 1, ng
-      flux(:,:,:,g)    = zero
-      fluxm(:,:,:,:,g) = zero
-    END DO
-  !$OMP END PARALLEL DO
-!_______________________________________________________________________
-!
 !   Using Jacobi iterations in energy, and the work in the outer loop
 !   will be parallelized with threads.
 !_______________________________________________________________________
@@ -241,7 +209,10 @@ SUBROUTINE translv
 
     cy_iits = 0
 
-    IF ( iproc==root .AND. it_det==0 ) WRITE( ounit, 203 )
+    IF ( iproc==root .AND. it_det==0 ) THEN
+      WRITE( *, 203 )
+      WRITE( ounit, 203 )
+    END IF
 
     CALL wtime ( t4 )
     tparam = tparam + t4 - t3
@@ -250,85 +221,25 @@ SUBROUTINE translv
 !!    WRITE (*, *) 'outer_looping oitm ', oitm, ' times'
 !!    WRITE (*, *) 'outer_looping oitm ', oitm, ' times'
     outer_loop: DO otno = 1, oitm
-!!    WRITE (*, *) 'out_loop wtiming'
-!!    WRITE (*, *) 'out_loop wtiming'
-!!    WRITE (*, *) 'out_loop wtiming'
-!!    WRITE (*, *) 'out_loop wtiming'
-      CALL wtime ( t5 )
-        
+
       IF ( iproc==root .AND. it_det==1 ) THEN
-!!    WRITE (*, *) 'writing 204'
-!!    WRITE (*, *) 'writing 204'
-!!    WRITE (*, *) 'writing 204'
-!!    WRITE (*, *) 'writing 204'
+        WRITE( *, 204 )     ( star, i = 1, 20 ), otno
         WRITE( ounit, 204 ) ( star, i = 1, 20 ), otno
       END IF
-!_______________________________________________________________________
-!
-!   Prepare some cross sections: total, in-group scattering, absorption.
-!   Keep in the time loop for better consistency with PARTISN. Set up
-!   geometric sweep parameters. Parallelize group loop with threads.
-!_______________________________________________________________________
-
-!!       WRITE (*, *) 'cross sectioning' 
-!!       WRITE (*, *) 'cross sectioning' 
-!!       WRITE (*, *) 'cross sectioning' 
-!!       WRITE (*, *) 'cross sectioning' 
-  !$OMP PARALLEL DO SCHEDULE(DYNAMIC,1) DEFAULT(SHARED) PRIVATE(g)
-       DO g = 1, ng
-!          write (*,*) 'expxs sigt'
-!          write (*,*) 'expxs sigt'
-   !!       write (*,*) 'sigt: size:', SIZE(sigt)
-   !!       write (*,*) 'sigt: size:', SIZE(sigt)
-   !!       write (*,*) 'sigt: ',sigt
-   !!       write (*,*) 'sigt: ',sigt
-   !!       write (*,*) 'mat: size:', SIZE(mat)
-   !!       write (*,*) 'mat: size:', SIZE(mat)
-   !!       write (*,*) 'mat:', mat
-   !!       write (*,*) 'mat:', mat
-   !!       write (*,*) 't_xs: size:', SIZE(t_xs)
-   !!       write (*,*) 't_xs: size:', SIZE(t_xs)
-   !!       write (*,*) 't_xs: ', t_xs
-   !!       write (*,*) 't_xs: ', t_xs
-         CALL expxs_reg ( sigt(:,g), mat, t_xs(:,:,:,g) )
-!         write (*,*) 'expxs siga' 
-!         write (*,*) 'expxs siga' 
-        CALL expxs_reg ( siga(:,g), mat, a_xs(:,:,:,g) )
-!        write (*,*) 'expxs slgg' 
-!        write (*,*) 'expxs slgg' 
-        CALL expxs_slgg ( slgg(:,:,g,g), mat, s_xs(:,:,:,:,g) )
-!        write (*,*) 'param_calc' 
-!        write (*,*) 'param_calc' 
-        CALL param_calc ( ichunk, nang, mu, eta, xi, t_xs(:,:,:,g),    &
-          vdelt(g), dinv(:,:,:,:,g) )
-      END DO
-  !$OMP END PARALLEL DO
 !_______________________________________________________________________
 !
 !     Perform an outer iteration. Add up inners. Check convergence.
 !_______________________________________________________________________
 
-!!    WRITE (*,*) 'outer iterationing'
-!!    WRITE (*,*) 'outer iterationing'
-!!    WRITE (*,*) 'outer iterationing'
-!!    WRITE (*,*) 'outer iterationing'
-      CALL wtime ( t6 )
-      tparam = tparam + t6 - t5
-
-!!      WRITE (*, *) 'outering'
-!!      WRITE (*, *) 'outering'
-!!      WRITE (*, *) 'outering'
-!!      WRITE (*, *) 'outering'
       CALL outer ( out_iits )
 !      write (*, *) 'outered'
 !      write (*, *) 'outered'
       cy_iits = cy_iits + out_iits
 
-!!      WRITE (*,*) 'writing 205'
-!!      WRITE (*,*) 'writing 205'
-!!      WRITE (*,*) 'writing 205'
-!!      WRITE (*,*) 'writing 205'
-      IF ( iproc == root ) WRITE( ounit, 205 ) otno, dfmxo, out_iits
+      IF ( iproc == root ) THEN
+        WRITE( *, 205 )     otno, dfmxo, out_iits
+        WRITE( ounit, 205 ) otno, dfmxo, out_iits
+      END IF
 
       ! XXX: kludge make this portable
       ! why did I put this here?
@@ -346,6 +257,12 @@ SUBROUTINE translv
 !   write (*, *) 'ended outer_loop'
 !_______________________________________________________________________
 !
+!   Compute and print the particle spectrum every cycle.
+!_______________________________________________________________________
+
+    IF ( popout == 2 ) CALL pop_calc ( cy, time )
+!_______________________________________________________________________
+!
 !   Print the time cycle details. Add time cycle iterations.
 !_______________________________________________________________________
 !!    WRITE (*,*) 'printing time cycle details'
@@ -353,72 +270,51 @@ SUBROUTINE translv
 !!    WRITE (*,*) 'printing time cycle details'
 !!    WRITE (*,*) 'printing time cycle details'
 
-    IF ( timedep == 1 ) THEN
-!!        WRITE (*,*) 'timedep was 1'
-!!        WRITE (*,*) 'timedep was 1'
-!!        WRITE (*,*) 'timedep was 1'
-!!        WRITE (*,*) 'timedep was 1'
-      IF ( otrdone ) THEN
-!!          WRITE (*,*) 'writing 206'
-!!          WRITE (*,*) 'writing 206'
-!!          WRITE (*,*) 'writing 206'
-!!          WRITE (*,*) 'writing 206'
-        IF ( iproc == root ) WRITE( ounit, 206 ) cy, time, otno, cy_iits
-    ELSE
-!!        WRITE (*, *) 'writing 207'
-!!        WRITE (*, *) 'writing 207'
-!!        WRITE (*, *) 'writing 207'
-!!        WRITE (*, *) 'writing 207'
-        
-        IF ( iproc == root ) WRITE( ounit, 207 ) cy, time, otno, cy_iits
-      END IF
-    ELSE
-      IF ( otrdone ) THEN
-!!          WRITE (*,*) 'writing 208'
-!!          WRITE (*,*) 'writing 208'
-!!          WRITE (*,*) 'writing 208'
-!!          WRITE (*,*) 'writing 208'
-        IF ( iproc == root ) WRITE( ounit, 208 ) otno, cy_iits
-    ELSE
-!!        WRITE (*,*) 'writing 209'
-!!        WRITE (*,*) 'writing 209'
-!!        WRITE (*,*) 'writing 209'
-!!        WRITE (*,*) 'writing 209'
-        IF ( iproc == root ) WRITE( ounit, 209 ) otno, cy_iits
+    IF ( iproc == root ) THEN
+      IF ( timedep == 1 ) THEN
+        IF ( otrdone ) THEN
+          WRITE( *, 206 )     cy, time, otno, cy_iits
+          WRITE( ounit, 206 ) cy, time, otno, cy_iits
+        ELSE
+          WRITE( *, 207 )     cy, time, otno, cy_iits
+          WRITE( ounit, 207 ) cy, time, otno, cy_iits
+        END IF
+      ELSE
+        IF ( otrdone ) THEN
+          WRITE( *, 208 )     otno, cy_iits
+          WRITE( ounit, 208 ) otno, cy_iits
+        ELSE
+          WRITE( *, 209 )     otno, cy_iits
+          WRITE( ounit, 209 ) otno, cy_iits
+        END IF
       END IF
     END IF
 
     tot_iits = tot_iits + cy_iits
-!!        WRITE (*, *) 'PUBLISHING'
-!!        WRITE (*, *) 'PUBLISHING'
-!!        WRITE (*, *) 'PUBLISHING'
-!!        WRITE (*, *) 'PUBLISHING'
-!    write (*,*) 'flux: ', flux
-!    write (*,*) 'flux: ', flux
-!    write (*,*) 'v: ', v
-!    write (*,*) 'v: ', v
     CALL publish
-!    write (*,*) 'PUBLISHED'
-!    write (*,*) 'PUBLISHED'
-    IF ( .NOT. otrdone ) EXIT time_loop
-!    write (*,*) 'didnt exit time loop'
-!    write (*,*) 'didnt exit time loop'
   END DO time_loop
+!_______________________________________________________________________
+!
+!   Compute and print the particle spectrum only at end of calc.
+!_______________________________________________________________________
 
-!!  WRITE (*, *) 'time_looped'
-!!  WRITE (*, *) 'time_looped'
-!!  WRITE (*, *) 'time_looped'
-!!  WRITE (*, *) 'time_looped'
-  IF ( timedep==1 .AND. iproc == root ) THEN
-    WRITE( ounit, 210 ) ( star, i = 1, 30 ), tot_iits
- END IF
-! write (*,*) 'danger write robinson'
-! write (*,*) 'danger write robinson'
- IF ( iproc == root ) WRITE( ounit, 211 ) ( star, i = 1, 80 )
-! write (*,*) 'got past iproc'
-! write (*,*) 'got past iproc'
-  CALL wtime ( t7 )
-  tslv = t7 - t1
+    IF ( popout == 1 ) CALL pop_calc ( cy, time )
+!_______________________________________________________________________
+!
+!   Final prints.
+!_______________________________________________________________________
+
+  IF ( iproc == root ) THEN
+    IF ( timedep == 1 ) THEN
+      WRITE( *, 210 )     ( star, i = 1, 30 ), tot_iits
+      WRITE( ounit, 210 ) ( star, i = 1, 30 ), tot_iits
+    END IF
+    WRITE( *, 211 )     ( star, i = 1, 80 )
+    WRITE( ounit, 211 ) ( star, i = 1, 80 )
+  END IF
+
+  CALL wtime ( t5 )
+  tslv = t5 - t1
   tmp = REAL( nx, r_knd ) * REAL( ny_gl, r_knd ) * REAL( nz_gl, r_knd )&
         * REAL( nang, r_knd ) * REAL( noct, r_knd )                    &
         * REAL( tot_iits, r_knd )
@@ -429,9 +325,7 @@ SUBROUTINE translv
 !  write (*,*) 'got past grind'
 !_______________________________________________________________________
 
-201 FORMAT( 10X, 'Iteration Monitor', /, 80A )
-!  write (*,*) 'got past 201'
-!  write (*,*) 'got past 201'
+  201 FORMAT( 10X, 'keyword Iteration Monitor', /, 80A )
   202 FORMAT( /, 1X, 30A, /, 2X, 'Time Cycle ', I3 )
 !  write (*,*) 'got past 202'
 !  write (*,*) 'got past 202'
@@ -446,17 +340,13 @@ SUBROUTINE translv
 !  write (*,*) 'got past 205'
   206 FORMAT( /, 2X, 'Cycle=', I4, 4X, 'Time=', ES11.4, 4X, 'No. ',    &
               'Outers=', I4, 4X, 'No. Inners=', I5 )
-!  write (*,*) 'got past 206'
-!  write (*,*) 'got past 206'
-  207 FORMAT( /, 2X, '***UNCONVERGED*** Stopping Iterations!!', /, 2X, &
+  207 FORMAT( /, 2X, '*WARNING: Unconverged outer iterations', /, 2X,  &
              'Cycle=', I4, 4X, 'Time=', ES11.4, 4X, 'No. Outers=', I4, &
              4X, 'No. Inners=', I5, / )
 !  write (*,*) 'got past 207'
 !  write (*,*) 'got past 207'
   208 FORMAT( /, 2X, 'No. Outers=', I4, 4X, 'No. Inners=', I5 )
-!  write (*,*) 'got past 208'
-!  write (*,*) 'got past 208'
-  209 FORMAT( /, 2X, '***UNCONVERGED*** Stopping Iterations!!', /, 2X, &
+  209 FORMAT( /, 2X, '*WARNING: Unconverged outer iteration!', /, 2X,  &
               'No. Outers=', I4, 4X, 'No. Inners=', I5, / )
 !  write (*,*) 'got past 209'
 !  write (*,*) 'got past 209'

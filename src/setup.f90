@@ -13,7 +13,7 @@ MODULE setup_module
   USE global_module, ONLY: i_knd, r_knd, ounit, zero, half, one, two
 
   USE geom_module, ONLY: ndimen, nx, ny, nz, lx, ly, lz, dx, dy, dz,   &
-       ny_gl, nz_gl, jlb, jub, klb, kub
+    ny_gl, nz_gl, jlb, jub, klb, kub, nc, jdim, kdim
 
   USE sn_module, ONLY: nang, mu, eta, xi, w, nmom, noct, sn_allocate,  &
        expcoeff
@@ -22,7 +22,7 @@ MODULE setup_module
        sigt, siga, sigs, slgg, data_allocate
 
   USE control_module, ONLY: epsi, iitm, oitm, timedep, tf, nsteps, dt, &
-       it_det, fluxp, fixup
+    swp_typ, it_det, fluxp, fixup, soloutp, kplane, popout
 
   USE mms_module, ONLY: mms_setup
 
@@ -31,9 +31,9 @@ MODULE setup_module
   USE time_module, ONLY: tset, wtime
 
   USE plib_module, ONLY: npey, npez, glmax, comm_snap, yproc, zproc,   &
-       iproc, root, nthreads, num_grth, thread_level, thread_single,      &
-       thread_funneled, thread_serialized, thread_multiple, nnested,      &
-       do_nested
+    iproc, root, nthreads, thread_level, thread_single,                &
+    thread_funneled, thread_serialized, thread_multiple, nnested,      &
+    do_nested, ichunk, pce
 
   IMPLICIT NONE
 
@@ -63,12 +63,13 @@ CONTAINS
          qie, qjs, qje, qks, qke
 
     REAL(r_knd) :: t1, t2
-    !_______________________________________________________________________
-    !
-    !   First put input ny and nz into ny_gl and nz_gl respectively. Use ny
-    !   and nz for local sizes. Determine global indices of local bounds.
-    !   Establish min of nthreads and ng for threaded MPI calls in sweep.
-    !_______________________________________________________________________
+!_______________________________________________________________________
+!
+!   First put input ny and nz into ny_gl and nz_gl respectively. Use ny
+!   and nz for local sizes. Determine global indices of local bounds.
+!   Set the number of spatial work chunks, nc. Set number of sweep
+!   directions in y/z, jdim/kdim.
+!_______________________________________________________________________
 
     CALL wtime ( t1 )
 
@@ -82,23 +83,30 @@ CONTAINS
     klb = zproc*nz + 1
     kub = (zproc+1) * nz
 
-    num_grth = MIN( nthreads, ng )
-    !_______________________________________________________________________
-    !
-    !   Allocate needed arrays
-    !_______________________________________________________________________
+    nc = nx/ichunk
+
+    jdim = MIN( ndimen, 2 )
+    kdim = MAX( ndimen-1, 1 )
+!_______________________________________________________________________
+!
+!   Compute PCE
+!_______________________________________________________________________
+
+    pce = one / ( one + ( nthreads*(two*npey+npez-3.0_r_knd) ) /       &
+                        ( 4.0_r_knd*nc*ng ) )
+!_______________________________________________________________________
+!
+!   Allocate needed arrays
+!_______________________________________________________________________
+
     CALL setup_alloc ( flg, ierr, error )
 !!    WRITE (*, *) 'setup alloced'
 !!    WRITE (*, *) 'setup alloced'
 !!    WRITE (*, *) 'setup alloced'
 !!    WRITE (*, *) 'setup alloced'
     IF ( ierr /= 0 ) THEN
-       CALL print_error ( ounit, error )
-!!       WRITE (*, *) 'setup_alloc failure'
-!!       WRITE (*, *) 'setup_alloc failure'
-!!       WRITE (*, *) 'setup_alloc failure'
-!!       WRITE (*, *) 'setup_alloc failure'
-       CALL stop_run ( flg, 0, 0 )
+      CALL print_error ( ounit, error )
+      CALL stop_run ( 1, flg, 0, 0 )
     END IF
     !_______________________________________________________________________
     !
@@ -173,16 +181,8 @@ CONTAINS
 !!    WRITE (*, *) 'setup_srced'
 !!    WRITE (*, *) 'setup_srced'
     IF ( ierr /= 0 ) THEN
-!!       WRITE (*, *) 'stupid piece of crud error'
-!!       WRITE (*, *) 'stupid piece of crud error'
-!!       WRITE (*, *) 'stupid piece of crud error'
-!!       WRITE (*, *) 'stupid piece of crud error'
-       CALL print_error ( ounit, error )
-!!       WRITE (*, *) 'setup_src error'
-!!       WRITE (*, *) 'setup_src error'
-!!       WRITE (*, *) 'setup_src error'
-!!       WRITE (*, *) 'setup_src error'
-       CALL stop_run ( 2, 0, 0 )
+      CALL print_error ( ounit, error )
+      CALL stop_run ( 1, 2, 0, 0 )
     END IF
 !!    WRITE (*, *) 'past setup_src error'
 !!    WRITE (*, *) 'past setup_src error'
@@ -222,12 +222,8 @@ CONTAINS
 !!    WRITE (*, *) 'glmaxed'
 !!    WRITE (*, *) 'glmaxed'
     IF ( ierr /= 0 ) THEN
-       CALL print_error ( ounit, error )
-!!       WRITE (*, *) 'glmax error'
-!!       WRITE (*, *) 'glmax error'
-!!       WRITE (*, *) 'glmax error'
-!!       WRITE (*, *) 'glmax error'
-       CALL stop_run ( 3, 0, 0 )
+      CALL print_error ( ounit, error )
+      CALL stop_run ( 1, 3, 0, 0 )
     END IF
 
 !!    WRITE (*, *) 'wtiming'
@@ -866,7 +862,8 @@ CONTAINS
 !!    WRITE (*, *) 'writing 157'
 !!    WRITE (*, *) 'writing 157'
     WRITE( ounit, 157 )
-    WRITE( ounit, 158 ) epsi, iitm, oitm, timedep, it_det, fluxp, fixup
+    WRITE( ounit, 158 ) epsi, iitm, oitm, timedep, swp_typ, it_det,    &
+      soloutp, kplane, popout, fluxp, fixup
 
     WRITE( ounit, 181 )
     WRITE( ounit, 182 ) npey, npez, nthreads
@@ -878,83 +875,88 @@ CONTAINS
     ELSE
        WRITE( ounit, 186 ) nnested
     END IF
+    WRITE ( ounit, 187 ) pce
 
 !!    WRITE (*, *) 'writing 159'
 !!    WRITE (*, *) 'writing 159'
 !!    WRITE (*, *) 'writing 159'
 !!    WRITE (*, *) 'writing 159'
     WRITE( ounit, 159 ) ( star, i = 1, 80 )
-    !_______________________________________________________________________
+!_______________________________________________________________________
 
-131 FORMAT( 10X, 'Calculation Run-time Parameters Echo', /, 80A, / )
+    131 FORMAT( 10X, 'keyword Calculation Run-time Parameters Echo', /,&
+                80A, / )
 
-132 FORMAT( 2X, 'Geometry' )
-133 FORMAT( 4X, 'ndimen = ', I1, /, 4X, 'nx = ', I5, /, 4X,        &
-         'ny = ', I5, /, 4X, 'nz = ', I5, /, 4X, 'lx = ',       &
-         ES11.4, /, 4X, 'ly = ', ES11.4, /, 4X, 'lz = ', ES11.4,&
-         /, 4X, 'dx = ', ES11.4, /, 4X, 'dy = ', ES11.4, /, 4X, &
-         'dz = ', ES11.4, / )
+    132 FORMAT( 2X, 'Geometry' )
+    133 FORMAT( 4X, 'ndimen = ', I1, /, 4X, 'nx = ', I5, /, 4X,        &
+                'ny = ', I5, /, 4X, 'nz = ', I5, /, 4X, 'lx = ',       &
+                ES11.4, /, 4X, 'ly = ', ES11.4, /, 4X, 'lz = ', ES11.4,&
+                /, 4X, 'dx = ', ES11.4, /, 4X, 'dy = ', ES11.4, /, 4X, &
+                'dz = ', ES11.4, / )
 
-134 FORMAT( 2X, 'Sn' )
-135 FORMAT( 4X, 'nmom = ', I1, /, 4X, 'nang = ', I4, /, 4X,        &
-         'noct = ', I1, /, /, 4X, 'w = ', ES11.4,               &
-         '   ... uniform weights', / )
-136 FORMAT( 4X, '      mu              eta               xi')
-137 FORMAT( 4X, ES15.8 )
-138 FORMAT( 4X, ES15.8, 2X, ES15.8 )
-139 FORMAT( 4X, ES15.8, 2X, ES15.8, 2X, ES15.8 )
+    134 FORMAT( 2X, 'Sn' )
+    135 FORMAT( 4X, 'nmom = ', I1, /, 4X, 'nang = ', I4, /, 4X,        &
+                'noct = ', I1, /, /, 4X, 'w = ', ES11.4,               &
+                '   ... uniform weights', / )
+    136 FORMAT( 4X, '      mu              eta               xi')
+    137 FORMAT( 4X, ES15.8 )
+    138 FORMAT( 4X, ES15.8, 2X, ES15.8 )
+    139 FORMAT( 4X, ES15.8, 2X, ES15.8, 2X, ES15.8 )
 
-140 FORMAT( /, 2X, 'Material Map' )
-141 FORMAT( 4X, 'mat_opt = ', I1, '   -->   nmat = ', I1 )
-142 FORMAT( 4X, 'Base material (default for every cell) = 1' )
-143 FORMAT( 4X, 'Material 2 present:', /, 8X, 'Starting cell: ( ', &
-         I5, ', ', I5, ', ', I5, ' )', /, 8X,                   &
-         'Ending cell:   ( ', I5, ', ', I5, ', ', I5, ' )' )
+    140 FORMAT( /, 2X, 'Material Map' )
+    141 FORMAT( 4X, 'mat_opt = ', I1, '   -->   nmat = ', I1 )
+    142 FORMAT( 4X, 'Base material (default for every cell) = 1' )
+    143 FORMAT( 4X, 'Material 2 present:', /, 8X, 'Starting cell: ( ', &
+                I5, ', ', I5, ', ', I5, ' )', /, 8X,                   &
+                'Ending cell:   ( ', I5, ', ', I5, ', ', I5, ' )' )
 
-144 FORMAT( /, 2X, 'Source Map' )
-145 FORMAT( 4X, 'src_opt = ', I1 )
-146 FORMAT( 4X, 'Source strength per cell (where applied) = 1.0' )
-147 FORMAT( 4X, 'Source map:', /, 8X, 'Starting cell: ( ', I5,     &
-         ', ', I5, ', ', I5, ' )', /, 8X, 'Ending cell:   ( ',  &
-         I5, ', ', I5, ', ', I5, ' )', / )
-1471 FORMAT( 4X, 'MMS-generated source', / )
+    144 FORMAT( /, 2X, 'Source Map' )
+    145 FORMAT( 4X, 'src_opt = ', I1 )
+    146 FORMAT( 4X, 'Source strength per cell (where applied) = 1.0' )
+    147 FORMAT( 4X, 'Source map:', /, 8X, 'Starting cell: ( ', I5,     &
+                ', ', I5, ', ', I5, ' )', /, 8X, 'Ending cell:   ( ',  &
+                I5, ', ', I5, ', ', I5, ' )', / )
+    1471 FORMAT( 4X, 'MMS-generated source', / )
 
-148 FORMAT( 2X, 'Pseudo Cross Sections Data' )
-149 FORMAT( 4X, 'ng = ', I3 )
-150 FORMAT( /, 4X, 'Material ', I1 )
-151 FORMAT( 4X, 'Group         Total         Absorption      '     &
-         'Scattering' )
-152 FORMAT( 5X, I3, 6X, ES13.6, 3X, ES13.6, 3X, ES13.6 )
+    148 FORMAT( 2X, 'Pseudo Cross Sections Data' )
+    149 FORMAT( 4X, 'ng = ', I3 )
+    150 FORMAT( /, 4X, 'Material ', I1 )
+    151 FORMAT( 4X, 'Group         Total         Absorption      '     &
+               'Scattering' )
+    152 FORMAT( 5X, I3, 6X, ES13.6, 3X, ES13.6, 3X, ES13.6 )
 
-153 FORMAT( /, 2X, 'Time-Dependent Calculation Data' )
-154 FORMAT( 4X, 'tf = ', ES11.4, /, 4X, 'nsteps = ', I4, /, 4X,    &
-         'dt = ', ES11.4, / )
-155 FORMAT( 4X, 'Group        Speed' )
-156 FORMAT( 5X, I3, 6X, ES11.4 )
+    153 FORMAT( /, 2X, 'Time-Dependent Calculation Data' )
+    154 FORMAT( 4X, 'tf = ', ES11.4, /, 4X, 'nsteps = ', I4, /, 4X,    &
+                'dt = ', ES11.4, / )
+    155 FORMAT( 4X, 'Group        Speed' )
+    156 FORMAT( 5X, I3, 6X, ES11.4 )
 
-157 FORMAT( /, 2X, 'Solution Control Parameters' )
-158 FORMAT( 4X, 'epsi = ', ES11.4, /, 4X, 'iitm = ', I3, /, 4X,    &
-         'oitm = ', I4, /, 4X, 'timedep = ', I1, /, 4X,         &
-         'it_det = ', I1, /, 4X, 'fluxp = ', I1, /, 4X,         &
-         'fixup = ', I1, / )
+    157 FORMAT( /, 2X, 'Solution Control Parameters' )
+    158 FORMAT( 4X, 'epsi = ', ES11.4, /, 4X, 'iitm = ', I3, /,        &
+                4X, 'oitm = ', I4, /, 4X, 'timedep = ', I1, /,         &
+                4X, 'swp_typ = ', I1, / 4X, 'it_det = ', I1, /,        &
+                4X, 'soloutp = ', I1, /, 4X, 'kplane = ', I4, /,       &
+                4X, 'popout = ', I1, /, 4X, 'fluxp = ', I1, /,         &
+                4X, 'fixup = ', I1, / )
 
-181 FORMAT( /, 2X, 'Parallelization Parameters' )
-182 FORMAT( 4X, 'npey = ', I5, /, 4X, 'npez = ', I5, /, 4X,        &
-         'nthreads = ', I4, / )
-183 FORMAT( 10X, 'Thread Support Level', /,                        &
-         10X, I2, ' - MPI_THREAD_SINGLE', /                     &
-         10X, I2, ' - MPI_THREAD_FUNNELED', /                   &
-         10X, I2, ' - MPI_THREAD_SERIALIZED', /                 &
-         10X, I2, ' - MPI_THREAD_MULTIPLE' )
-184 FORMAT( 4X, 'thread_level = ', I2, / )
-185 FORMAT( 4X, '.TRUE. nested threading', /, 6X, 'nnested = ',    &
-         I4, / )
-186 FORMAT( 4X, '.FALSE. nested threading', /, 6X, 'nnested = ',   &
-         I4, / )
+    181 FORMAT( /, 2X, 'Parallelization Parameters' )
+    182 FORMAT( 4X, 'npey = ', I5, /, 4X, 'npez = ', I5, /, 4X,        &
+                'nthreads = ', I4, / )
+    183 FORMAT( 10X, 'Thread Support Level', /,                        &
+                10X, I2, ' - MPI_THREAD_SINGLE', /                     &
+                10X, I2, ' - MPI_THREAD_FUNNELED', /                   &
+                10X, I2, ' - MPI_THREAD_SERIALIZED', /                 &
+                10X, I2, ' - MPI_THREAD_MULTIPLE' )
+    184 FORMAT( 4X, 'thread_level = ', I2, / )
+    185 FORMAT( 4X, '.TRUE. nested threading', /, 6X, 'nnested = ',    &
+                I4, / )
+    186 FORMAT( 4X, '.FALSE. nested threading', /, 6X, 'nnested = ',   &
+                I4, / )
+    187 FORMAT( 4X, 'Parallel Computational Efficiency = ', F6.4, / )
 
-159 FORMAT( 80A, / )
-    !_______________________________________________________________________
-    !_______________________________________________________________________
+    159 FORMAT( 80A, / )
+!_______________________________________________________________________
+!_______________________________________________________________________
 
   END SUBROUTINE setup_echo
 

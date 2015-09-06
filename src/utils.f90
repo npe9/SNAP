@@ -2,8 +2,8 @@
 !
 ! MODULE: utils_module
 !> @brief
-!> This module contains utility subroutines for handling file open/close,
-!> errors, command line reading, and program termination.
+!> This module contains utility subroutines for handling file
+!> open/close, errors, command line reading, and program termination.
 !
 !-----------------------------------------------------------------------
 
@@ -20,16 +20,9 @@ MODULE utils_module
     PUBLIC
 
 
-CONTAINS
+  USE plib_module, ONLY: iproc, root, pend, plock_omp, nthreads
 
-
-    SUBROUTINE cmdarg ( ierr, error )
-
-        !-----------------------------------------------------------------------
-        !
-        ! Read the command line for the input and output file names.
-        !
-        !-----------------------------------------------------------------------
+  USE control_module, ONLY: swp_typ
 
         CHARACTER(LEN=64), INTENT(OUT) :: error
 
@@ -70,45 +63,54 @@ CONTAINS
             CALL GETARG ( 1, arg )
             segment = ADJUSTL( arg )
 
-        CASE (2)
-            DO n = 1, 2
+    INTEGER(i_knd) :: narg, n
+!_______________________________________________________________________
+!
+!   Return if not root. Loop over the first two command line arguments
+!   to get i/o file names.
+!_______________________________________________________________________
 
-            CALL GETARG ( n, arg )
-            arg = ADJUSTL( arg )
-            IF ( arg(1:1)=='-' .OR. arg(1:1)=='<' .OR. arg(1:1)=='>' ) THEN
-                ierr = 1
-                error = '***ERROR: CMDARG: Bad command line entry, arg:'
-                WRITE( error, '(A,A,I2)') TRIM( error ), ' ', n
-            ELSE IF ( n == 1 ) THEN
-                ifile = arg
-            ELSE IF ( n == 2 ) THEN
-                ofile = arg
-            END IF
-            END DO
-        CASE (3)
-            DO n = 1,3
+    IF ( iproc /= root ) RETURN
 
-            CALL GETARG ( n, arg )
-            arg = ADJUSTL( arg )
-            IF ( arg(1:1)=='-' .OR. arg(1:1)=='<' .OR. arg(1:1)=='>' ) THEN
-                ierr = 1
-                error = '***ERROR: CMDARG: Bad command line entry, argc:'
-                WRITE( error, '(A,A,I2)') TRIM( error ), ' ', n
-            ELSE IF (n == 1) THEN
-                ifile = arg
-            ELSE IF ( n == 2 ) THEN
-                ofile = arg
-            ELSE IF ( n == 3 ) THEN
-                segment = ADJUSTL( arg )
-            END IF
-            END DO
-        CASE DEFAULT
-            ierr = 1
-            error = '***ERROR: CMDARG: Missing command line entry'
-            RETURN
-        END SELECT
+    ierr = 0
+    error = ''
+
+    narg = COMMAND_ARGUMENT_COUNT ( )
+
+    IF ( narg /= 2 ) THEN
+      ierr = 1
+      error = '***ERROR: CMDARG: Missing command line entry'
+      RETURN
+    END IF
+
+    DO n = 1, 2
+
+      CALL GET_COMMAND_ARGUMENT ( n, arg )
+      arg = ADJUSTL( arg )
+      IF ( arg(1:1)=='-' .OR. arg(1:1)=='<' .OR. arg(1:1)=='>' ) THEN
+        ierr = 1
+        error = '***ERROR: CMDARG: Bad command line entry, arg:'
+        WRITE( error, '(A,A,I2)') TRIM( error ), ' ', n
+      ELSE IF ( n == 1 ) THEN
+        ifile = arg
+      ELSE IF ( n == 2 ) THEN
+        ofile = arg
+      END IF
+
+    END DO
+!_______________________________________________________________________
+!_______________________________________________________________________
+
+  END SUBROUTINE cmdarg
 
 
+  SUBROUTINE open_file ( funit, fname, fstat, faction, ierr, error )
+
+!-----------------------------------------------------------------------
+!
+! Open a file.
+!
+!-----------------------------------------------------------------------
 
         !_______________________________________________________________________
         !_______________________________________________________________________
@@ -218,14 +220,9 @@ CONTAINS
 
         IF ( iproc /= root ) RETURN
 
-        IF ( funit > 0 ) THEN
-            WRITE( funit, 101 ) error
-        ELSE
-            WRITE( *, 101 ) error
-        END IF
-!        WRITE(*,*) error
-!        WRITE(*,*) error
-        !_______________________________________________________________________
+    WRITE( *, 101 ) error
+    IF ( funit > 0 ) WRITE( funit, 101 ) error
+!_______________________________________________________________________
 
         101 FORMAT( 3X, A, / )
         !_______________________________________________________________________
@@ -234,7 +231,7 @@ CONTAINS
     END SUBROUTINE print_error
 
 
-    SUBROUTINE stop_run ( flg1, flg2, flg3 )
+  SUBROUTINE stop_run ( flg1, flg2, flg3, flg4 )
 
         !-----------------------------------------------------------------------
         !
@@ -242,32 +239,32 @@ CONTAINS
         !
         !-----------------------------------------------------------------------
 
-        INTEGER(i_knd), INTENT(IN) :: flg1, flg2, flg3
-        !_______________________________________________________________________
-        !
-        !   Local Variable
-        !_______________________________________________________________________
+   INTEGER(i_knd), INTENT(IN) :: flg1, flg2, flg3, flg4
+!_______________________________________________________________________
+!
+!   Local Variables
+!_______________________________________________________________________
+!_______________________________________________________________________
+!
+!   Deallocate if necessary. Depends on flg1, 0/1=no/yes deallocate.
+!_______________________________________________________________________
 
-        INTEGER(i_knd) :: ierr
-        !_______________________________________________________________________
-        !
-        !   Deallocate if necessary. Depends on flg1, 0/1=no/yes deallocate.
-        !_______________________________________________________________________
+    IF ( flg1 > 0 ) CALL plock_omp ( 'destroy', nthreads )
 
-        IF ( flg1 > 0 ) CALL dealloc_input ( flg1 )
+    IF ( flg2 > 0 ) CALL dealloc_input ( flg2 )
 
-        IF ( flg2 > 0 ) CALL dealloc_solve ( flg2 )
+    IF ( flg3 > 0 ) CALL dealloc_solve ( swp_typ, flg3 )
 
-        IF ( iproc == root ) THEN
-            IF ( flg3 == 0 ) THEN
-                WRITE( *, '(1X,A)') 'Aww SNAP. Program failed. Try again.'
-            ELSE IF ( flg3 == 1 ) THEN
-                WRITE( *, '(1X,A)') 'Success! Done in a SNAP!'
-            ELSE IF ( flg3 == 2 ) THEN
-                WRITE( *, '(1X,A)') 'Oh SNAP. That did not converge. But ' //  &
-                    'take a look at the Timing Summary anyway!'
-            END IF
-        END IF
+    IF ( iproc == root ) THEN
+      IF ( flg4 == 0 ) THEN
+        WRITE( *, '(1X,A)') 'Aww SNAP. Program failed. Try again.'
+      ELSE IF ( flg4 == 1 ) THEN
+        WRITE( *, '(1X,A)') 'Success! Done in a SNAP!'
+      ELSE IF ( flg4 == 2 ) THEN
+        WRITE( *, '(1X,A)') 'Oh SNAP. That did not converge. But ' //  &
+          'take a look at the Timing Summary anyway!'
+      END IF
+    END IF
 
         CALL pend
 
