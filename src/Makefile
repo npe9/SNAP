@@ -76,7 +76,8 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-bin_PROGRAMS = snap_kitten_tcasm$(EXEEXT)
+bin_PROGRAMS = snap_kitten_tcasm$(EXEEXT) snap_linux_null$(EXEEXT) \
+	snap_kitten_xemem$(EXEEXT) snap_linux_xpmem$(EXEEXT)
 subdir = .
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) \
@@ -109,6 +110,48 @@ snap_kitten_tcasm_OBJECTS = $(am_snap_kitten_tcasm_OBJECTS)
 snap_kitten_tcasm_LDADD = $(LDADD)
 snap_kitten_tcasm_LINK = $(FCLD) $(AM_FCFLAGS) $(FCFLAGS) \
 	$(snap_kitten_tcasm_LDFLAGS) $(LDFLAGS) -o $@
+am_snap_kitten_xemem_OBJECTS = control.$(OBJEXT) data.$(OBJEXT) \
+	dealloc.$(OBJEXT) dim1_sweep.$(OBJEXT) dim3_sweep.$(OBJEXT) \
+	expxs.$(OBJEXT) geom.$(OBJEXT) global.$(OBJEXT) \
+	inner.$(OBJEXT) input.$(OBJEXT) mms.$(OBJEXT) \
+	octsweep.$(OBJEXT) outer.$(OBJEXT) output.$(OBJEXT) \
+	plib.$(OBJEXT) setup.$(OBJEXT) snap_main.$(OBJEXT) \
+	sn.$(OBJEXT) solvar.$(OBJEXT) sweep.$(OBJEXT) time.$(OBJEXT) \
+	translv.$(OBJEXT) utils.$(OBJEXT) version.$(OBJEXT) \
+	analytics.$(OBJEXT) gfortran_iargc.$(OBJEXT) \
+	mpidummy.$(OBJEXT) syscalls-kitten-tcasm-enclave.$(OBJEXT)
+snap_kitten_xemem_OBJECTS = $(am_snap_kitten_xemem_OBJECTS)
+snap_kitten_xemem_LDADD = $(LDADD)
+snap_kitten_xemem_LINK = $(FCLD) $(AM_FCFLAGS) $(FCFLAGS) \
+	$(snap_kitten_xemem_LDFLAGS) $(LDFLAGS) -o $@
+am_snap_linux_null_OBJECTS = control.$(OBJEXT) data.$(OBJEXT) \
+	dealloc.$(OBJEXT) dim1_sweep.$(OBJEXT) dim3_sweep.$(OBJEXT) \
+	expxs.$(OBJEXT) geom.$(OBJEXT) global.$(OBJEXT) \
+	inner.$(OBJEXT) input.$(OBJEXT) mms.$(OBJEXT) \
+	octsweep.$(OBJEXT) outer.$(OBJEXT) output.$(OBJEXT) \
+	plib.$(OBJEXT) setup.$(OBJEXT) snap_main.$(OBJEXT) \
+	sn.$(OBJEXT) solvar.$(OBJEXT) sweep.$(OBJEXT) time.$(OBJEXT) \
+	translv.$(OBJEXT) utils.$(OBJEXT) version.$(OBJEXT) \
+	analytics.$(OBJEXT) gfortran_iargc.$(OBJEXT) \
+	mpidummy.$(OBJEXT) syscalls-linux-null-local.$(OBJEXT)
+snap_linux_null_OBJECTS = $(am_snap_linux_null_OBJECTS)
+snap_linux_null_LDADD = $(LDADD)
+snap_linux_null_LINK = $(FCLD) $(AM_FCFLAGS) $(FCFLAGS) \
+	$(snap_linux_null_LDFLAGS) $(LDFLAGS) -o $@
+am_snap_linux_xpmem_OBJECTS = control.$(OBJEXT) data.$(OBJEXT) \
+	dealloc.$(OBJEXT) dim1_sweep.$(OBJEXT) dim3_sweep.$(OBJEXT) \
+	expxs.$(OBJEXT) geom.$(OBJEXT) global.$(OBJEXT) \
+	inner.$(OBJEXT) input.$(OBJEXT) mms.$(OBJEXT) \
+	octsweep.$(OBJEXT) outer.$(OBJEXT) output.$(OBJEXT) \
+	plib.$(OBJEXT) setup.$(OBJEXT) snap_main.$(OBJEXT) \
+	sn.$(OBJEXT) solvar.$(OBJEXT) sweep.$(OBJEXT) time.$(OBJEXT) \
+	translv.$(OBJEXT) utils.$(OBJEXT) version.$(OBJEXT) \
+	analytics.$(OBJEXT) gfortran_iargc.$(OBJEXT) \
+	mpidummy.$(OBJEXT) syscalls-linux-xpmem-local.$(OBJEXT)
+snap_linux_xpmem_OBJECTS = $(am_snap_linux_xpmem_OBJECTS)
+snap_linux_xpmem_LDADD = $(LDADD)
+snap_linux_xpmem_LINK = $(FCLD) $(AM_FCFLAGS) $(FCFLAGS) \
+	$(snap_linux_xpmem_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_$(V))
 am__v_P_ = $(am__v_P_$(AM_DEFAULT_VERBOSITY))
 am__v_P_0 = false
@@ -149,8 +192,11 @@ AM_V_FCLD = $(am__v_FCLD_$(V))
 am__v_FCLD_ = $(am__v_FCLD_$(AM_DEFAULT_VERBOSITY))
 am__v_FCLD_0 = @echo "  FCLD    " $@;
 am__v_FCLD_1 = 
-SOURCES = $(snap_kitten_tcasm_SOURCES)
-DIST_SOURCES = $(snap_kitten_tcasm_SOURCES)
+SOURCES = $(snap_kitten_tcasm_SOURCES) $(snap_kitten_xemem_SOURCES) \
+	$(snap_linux_null_SOURCES) $(snap_linux_xpmem_SOURCES)
+DIST_SOURCES = $(snap_kitten_tcasm_SOURCES) \
+	$(snap_kitten_xemem_SOURCES) $(snap_linux_null_SOURCES) \
+	$(snap_linux_xpmem_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -204,7 +250,7 @@ AUTOMAKE = ${SHELL} /home/npe/leviathan/SNAP/src/missing automake-1.13
 AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
-CFLAGS = -I../../kitten//include -I../../kitten//user/liblwk -I../../libhobbes -I../../xpmem/include -g -O2
+CFLAGS =    -g -O2 -I../../xpmem/include  -I../../libhobbes  -I../../kitten/include -I../../kitten/user/liblwk 
 CPP = gcc -E
 CPPFLAGS = 
 CYGPATH_W = echo
@@ -216,16 +262,16 @@ ECHO_T =
 EGREP = /usr/bin/grep -E
 EXEEXT = 
 FC = gfortran
-FCFLAGS =  -g -Wall -fno-backtrace -g -O2
+FCFLAGS = -g -fbounds-check -Wall -fbacktrace -g -O2
 GREP = /usr/bin/grep
 INSTALL = /usr/bin/install -c
 INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
-LDFLAGS = -L../../kitten//user/liblwk -L../../libhobbes -L../../xpmem/lib -static
+LDFLAGS =     -L../../xpmem/lib  -L../../libhobbes  -L../../kitten/user/liblwk 
 LIBOBJS = 
-LIBS = -llwk -lhobbes -lxpmem -lm -lrt -lpthread 
+LIBS = -llwk -lhobbes -lxpmem -lm -lrt -lpthread -lgomp 
 LTLIBOBJS = 
 MAKEINFO = ${SHELL} /home/npe/leviathan/SNAP/src/missing makeinfo
 MKDIR_P = /usr/bin/mkdir -p
@@ -286,8 +332,16 @@ top_build_prefix =
 top_builddir = .
 top_srcdir = .
 AUTOMAKE_OPTIONS = foreign
-snap_kitten_tcasm_LDFLAGS = -static -Wl,--whole-archive,--no-whole-archive -fopenmp -fno-backtrace
-snap_kitten_tcasm_SOURCES = control.f90 data.f90 dealloc.f90 dim1_sweep.f90 dim3_sweep.f90 expxs.f90 geom.f90 global.f90 inner.f90 input.f90 mms.f90 octsweep.f90 outer.f90 output.f90 plib.f90 setup.f90 snap_main.f90 sn.f90 solvar.f90 sweep.f90 time.f90 translv.f90 utils.f90 version.f90 analytics.c gfortran_iargc.c mpidummy.c syscalls-kitten-tcasm-enclave.c
+SNAP_COMMON = control.f90 data.f90 dealloc.f90 dim1_sweep.f90 dim3_sweep.f90 expxs.f90 geom.f90 global.f90 inner.f90 input.f90 mms.f90 octsweep.f90 outer.f90 output.f90 plib.f90 setup.f90 snap_main.f90 sn.f90 solvar.f90 sweep.f90 time.f90 translv.f90 utils.f90 version.f90 analytics.c gfortran_iargc.c mpidummy.c 
+snap_kitten_tcasm_LDFLAGS = -static -Wl,--whole-archive,--no-whole-archive -fopenmp # -fcheck=all #-fno-backtrace
+snap_kitten_tcasm_SOURCES = control.f90 data.f90 dealloc.f90 dim1_sweep.f90 dim3_sweep.f90 expxs.f90 geom.f90 global.f90 inner.f90 input.f90 mms.f90 octsweep.f90 outer.f90 output.f90 plib.f90 setup.f90 snap_main.f90 sn.f90 solvar.f90 sweep.f90 time.f90 translv.f90 utils.f90 version.f90 analytics.c gfortran_iargc.c mpidummy.c  syscalls-kitten-tcasm-enclave.c
+snap_linux_null_LDFLAGS = -static -Wl,--whole-archive,--no-whole-archive -fopenmp #-fcheck=all #-fno-backtrace
+#snap_linux_null_SOURCES = $SNAP_COMMON syscalls-linux-null-local.c
+snap_linux_null_SOURCES = control.f90 data.f90 dealloc.f90 dim1_sweep.f90 dim3_sweep.f90 expxs.f90 geom.f90 global.f90 inner.f90 input.f90 mms.f90 octsweep.f90 outer.f90 output.f90 plib.f90 setup.f90 snap_main.f90 sn.f90 solvar.f90 sweep.f90 time.f90 translv.f90 utils.f90 version.f90 analytics.c gfortran_iargc.c mpidummy.c  syscalls-linux-null-local.c
+snap_kitten_xemem_LDFLAGS = -static -Wl,--whole-archive,--no-whole-archive -fopenmp # -fcheck=all #-fno-backtrace
+snap_kitten_xemem_SOURCES = control.f90 data.f90 dealloc.f90 dim1_sweep.f90 dim3_sweep.f90 expxs.f90 geom.f90 global.f90 inner.f90 input.f90 mms.f90 octsweep.f90 outer.f90 output.f90 plib.f90 setup.f90 snap_main.f90 sn.f90 solvar.f90 sweep.f90 time.f90 translv.f90 utils.f90 version.f90 analytics.c gfortran_iargc.c mpidummy.c  syscalls-kitten-tcasm-enclave.c
+snap_linux_xpmem_LDFLAGS = -static -Wl,--whole-archive,--no-whole-archive -fopenmp # -fcheck=all #-fno-backtrace
+snap_linux_xpmem_SOURCES = control.f90 data.f90 dealloc.f90 dim1_sweep.f90 dim3_sweep.f90 expxs.f90 geom.f90 global.f90 inner.f90 input.f90 mms.f90 octsweep.f90 outer.f90 output.f90 plib.f90 setup.f90 snap_main.f90 sn.f90 solvar.f90 sweep.f90 time.f90 translv.f90 utils.f90 version.f90 analytics.c gfortran_iargc.c mpidummy.c  syscalls-linux-xpmem-local.c
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -389,6 +443,18 @@ snap_kitten_tcasm$(EXEEXT): $(snap_kitten_tcasm_OBJECTS) $(snap_kitten_tcasm_DEP
 	@rm -f snap_kitten_tcasm$(EXEEXT)
 	$(AM_V_FCLD)$(snap_kitten_tcasm_LINK) $(snap_kitten_tcasm_OBJECTS) $(snap_kitten_tcasm_LDADD) $(LIBS)
 
+snap_kitten_xemem$(EXEEXT): $(snap_kitten_xemem_OBJECTS) $(snap_kitten_xemem_DEPENDENCIES) $(EXTRA_snap_kitten_xemem_DEPENDENCIES) 
+	@rm -f snap_kitten_xemem$(EXEEXT)
+	$(AM_V_FCLD)$(snap_kitten_xemem_LINK) $(snap_kitten_xemem_OBJECTS) $(snap_kitten_xemem_LDADD) $(LIBS)
+
+snap_linux_null$(EXEEXT): $(snap_linux_null_OBJECTS) $(snap_linux_null_DEPENDENCIES) $(EXTRA_snap_linux_null_DEPENDENCIES) 
+	@rm -f snap_linux_null$(EXEEXT)
+	$(AM_V_FCLD)$(snap_linux_null_LINK) $(snap_linux_null_OBJECTS) $(snap_linux_null_LDADD) $(LIBS)
+
+snap_linux_xpmem$(EXEEXT): $(snap_linux_xpmem_OBJECTS) $(snap_linux_xpmem_DEPENDENCIES) $(EXTRA_snap_linux_xpmem_DEPENDENCIES) 
+	@rm -f snap_linux_xpmem$(EXEEXT)
+	$(AM_V_FCLD)$(snap_linux_xpmem_LINK) $(snap_linux_xpmem_OBJECTS) $(snap_linux_xpmem_LDADD) $(LIBS)
+
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 
@@ -399,6 +465,8 @@ include ./$(DEPDIR)/analytics.Po
 include ./$(DEPDIR)/gfortran_iargc.Po
 include ./$(DEPDIR)/mpidummy.Po
 include ./$(DEPDIR)/syscalls-kitten-tcasm-enclave.Po
+include ./$(DEPDIR)/syscalls-linux-null-local.Po
+include ./$(DEPDIR)/syscalls-linux-xpmem-local.Po
 
 .c.o:
 	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<

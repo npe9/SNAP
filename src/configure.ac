@@ -11,42 +11,43 @@ AX_OPENMP
 AC_PROG_CC
 AC_PROG_FC
 
-FCFLAGS=" -g -Wall -fno-backtrace $FCFLAGS"
+FCFLAGS="-g -fbounds-check -Wall -fbacktrace $FCFLAGS"
 # Checks for libraries.
 AC_CHECK_LIB([gomp], [omp_get_num_threads]) 
 AC_CHECK_LIB([pthread], [pthread_create])
 AC_CHECK_LIB([rt], [aio_read])
 AC_CHECK_LIB([m], [round])
 AC_CHECK_LIB([mpi], [mpi_init])
+
 AC_ARG_WITH([xpmem],
 			[AS_HELP_STRING([--with-xpmem],
 							[path to nonstandard location for xpmem library])],
 							[
-							LDFLAGS="-L$withval/lib $LDFLAGS"
-							CFLAGS="-I$withval/include $CFLAGS"
-							],
+							LDFLAGS=" $LDFLAGS -L$withval/lib "
+						  CFLAGS=" $CFLAGS -I$withval/include "
+              AC_CHECK_LIB([xpmem], [xpmem_get], [], [AC_MSG_ERROR([xpmem required but not found])])
+              ],
 							[])
-AC_CHECK_LIB([xpmem], [xpmem_get], [], [AC_MSG_ERROR([xpmem required but not found])])
 
 AC_ARG_WITH([hobbes],
 			[AS_HELP_STRING([--with-hobbes],
 							[path to nonstandard location for the hobbes library])],
 							[
-							LDFLAGS="-L$withval $LDFLAGS"
-							CFLAGS="-I$withval $CFLAGS"
-							],
+							LDFLAGS=" $LDFLAGS -L$withval "
+							CFLAGS=" $CFLAGS -I$withval "
+              AC_CHECK_LIB([hobbes], [xemem_get], [], [AC_MSG_ERROR([hobbes required but not found])])
+             	],
 							[])
-AC_CHECK_LIB([hobbes], [xemem_get], [], [AC_MSG_ERROR([hobbes required but not found])])
 
 AC_ARG_WITH([kitten],
 			[AS_HELP_STRING([--with-kitten],
 							[path to nonstandard location for kitten and its lwk library])],
 							[
-							LDFLAGS="-L$withval/user/liblwk $LDFLAGS"
-							CFLAGS="-I$withval/include -I$withval/user/liblwk $CFLAGS"
+              LDFLAGS=" $LDFLAGS -L$withval/user/liblwk "
+							CFLAGS=" $CFLAGS -I$withval/include -I$withval/user/liblwk "
+              AC_CHECK_LIB([lwk], [aspace_map_region], [], [AC_MSG_ERROR([liblwk required but not found])])
 							],
 							[])
-AC_CHECK_LIB([lwk], [aspace_map_region], [], [AC_MSG_ERROR([liblwk required but not found])])
 
 
 # Checks for header files.

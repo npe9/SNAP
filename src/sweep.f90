@@ -209,12 +209,17 @@ MODULE sweep_module
 
   !$OMP DO SCHEDULE(STATIC,1) PRIVATE(i)
             DO i = 1, num_grth
-              IF ( dogrp(i) == 0 ) CYCLE
+               IF ( dogrp(i) == 0 ) CYCLE
+!               write (*, *) 'calling octsweep second'
+!               write (*, *) 'calling octsweep second'
               CALL octsweep( dogrp(i), iop, jd, kd, jlo, jhi, jst,     &
-                klo, khi, kst )
+                   klo, khi, kst )
+!              write (*, *) 'called octsweep second'
+!              write (*, *) 'called octsweep second'
             END DO
   !$OMP END DO NOWAIT
-
+!            write (*, *) 'outgoingy or outgoingz'
+!            write (*, *) 'outgoingy or outgoingz'
             IF ( outgoingy .OR. outgoingz ) THEN
   !$OMP DO SCHEDULE(STATIC,1) ORDERED PRIVATE(i)
               DO i = 1, num_grth
@@ -235,13 +240,16 @@ MODULE sweep_module
 !       End sweep for octant pair. Use barrier statement to sync threads
 !       and use single block to assign next set of groups, if any left
 !_______________________________________________________________________
-
+!          write (*, *) 'ending octant pair sweep'
+!          write (*, *) 'ending octant pair sweep'
         END DO iop_loop
 
   !$OMP BARRIER
 
   !$OMP SINGLE
         dogrp = 0
+!        write (*, *) 'doing num_grth gnext'
+!        write (*, *) 'doing num_grth gnext'
         DO i = 1, num_grth
           gnext = MAXLOC( grp_act )
           g = gnext(1)
@@ -252,8 +260,11 @@ MODULE sweep_module
   !$OMP END SINGLE
 
       END DO dogrp_loop
-
-    END DO jd_loop
+!      write (*, *) 'end jd_loop'
+!      write (*, *) 'end jd_loop'
+   END DO jd_loop
+!   write (*, *) 'end kd_loop'
+!   write (*, *) 'end kd_loop'
     END DO kd_loop
 
   !$OMP END PARALLEL
@@ -261,11 +272,13 @@ MODULE sweep_module
 !
 !   Destroy the lock
 !_______________________________________________________________________
-
+!    write (*, *) 'destroying lock'
+!    write (*, *) 'destroying lock'
     IF ( use_lock) CALL plock_omp ( 'destroy' )
 !_______________________________________________________________________
 !_______________________________________________________________________
-
+!    write (*, *) 'ending sweep'
+!    write (*, *) 'ending sweep'
   END SUBROUTINE sweep
 
 

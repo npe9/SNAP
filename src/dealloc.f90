@@ -42,15 +42,27 @@ MODULE dealloc_module
     INTEGER(i_knd), INTENT(IN) :: flg
 !_______________________________________________________________________
 
-    !WRITE (*, *) 'calling sn_deallocate'
+!!    !WRITE (*, *) 'calling sn_deallocate'
+!!    !WRITE (*, *) 'calling sn_deallocate'
+!!    !WRITE (*, *) 'calling sn_deallocate'
+!!    !WRITE (*, *) 'calling sn_deallocate'
     CALL sn_deallocate
 
-    !WRITE (*, *) 'calling data_deallocate'
+!!    !WRITE (*, *) 'calling data_deallocate'
+!!    !WRITE (*, *) 'calling data_deallocate'
+!!    !WRITE (*, *) 'calling data_deallocate'
+!!    !WRITE (*, *) 'calling data_deallocate'
     IF ( flg > 1 ) CALL data_deallocate
 
-    !WRITE (*, *) 'calling mms_deallocate'
+!!    !WRITE (*, *) 'calling mms_deallocate'
+!!    !WRITE (*, *) 'calling mms_deallocate'
+!!    !WRITE (*, *) 'calling mms_deallocate'
+!!    !WRITE (*, *) 'calling mms_deallocate'
     IF ( flg > 2 ) CALL mms_deallocate
-    !WRITE (*, *) 'dealloced input'
+!!    !WRITE (*, *) 'dealloced input'
+!!    !WRITE (*, *) 'dealloced input'
+!!    !WRITE (*, *) 'dealloced input'
+!!    !WRITE (*, *) 'dealloced input'
 !_______________________________________________________________________
 !_______________________________________________________________________
 
@@ -68,12 +80,21 @@ MODULE dealloc_module
 
     INTEGER(i_knd), INTENT(IN) :: flg
 !_______________________________________________________________________
-    !WRITE (*, *) 'calling geom_dealloc'
+!!    !WRITE (*, *) 'calling geom_dealloc'
+!!    !WRITE (*, *) 'calling geom_dealloc'
+!!    !WRITE (*, *) 'calling geom_dealloc'
+!!    !WRITE (*, *) 'calling geom_dealloc'
     CALL geom_dealloc
 
-    !WRITE (*,*) 'calling solvar_dealloc'
+!!    !WRITE (*,*) 'calling solvar_dealloc'
+!!    !WRITE (*,*) 'calling solvar_dealloc'
+!!    !WRITE (*,*) 'calling solvar_dealloc'
+!!    !WRITE (*,*) 'calling solvar_dealloc'
     IF ( flg > 1 ) CALL solvar_dealloc
-    !WRITE (*, *) 'calling control_dealloc'
+!!    !WRITE (*, *) 'calling control_dealloc'
+!!    !WRITE (*, *) 'calling control_dealloc'
+!!    !WRITE (*, *) 'calling control_dealloc'
+!!    !WRITE (*, *) 'calling control_dealloc'
     IF ( flg > 2 ) CALL control_dealloc
 !_______________________________________________________________________
 !_______________________________________________________________________

@@ -99,18 +99,45 @@ CONTAINS
     ierr = 0
 
     IF ( timedep == 1 ) THEN
-       WRITE (*,*) 'solvar_alloc: allocate timedep 1'
-       WRITE (*,*) 'nang ', nang
-       WRITE (*,*) 'nx ', nx
-       WRITE (*,*) 'ny ', ny
-       WRITE (*,*) 'nz ', nz
-       WRITE (*,*) 'noct ', noct
-       WRITE (*,*) 'ng ', ng
-       WRITE (*, *) 'nang*nx*ny*nz*noct*ng ',nang*nx*ny*nz*noct*ng
+!!       WRITE (*,*) 'solvar_alloc: allocate timedep 1'
+!!       WRITE (*,*) 'solvar_alloc: allocate timedep 1'
+!!       WRITE (*,*) 'solvar_alloc: allocate timedep 1'
+!!       WRITE (*,*) 'solvar_alloc: allocate timedep 1'
+!!       WRITE (*,*) 'nang ', nang
+!!       WRITE (*,*) 'nang ', nang
+!!       WRITE (*,*) 'nang ', nang
+!!       WRITE (*,*) 'nang ', nang
+!!       WRITE (*,*) 'nx ', nx
+!!       WRITE (*,*) 'nx ', nx
+!!       WRITE (*,*) 'nx ', nx
+!!       WRITE (*,*) 'nx ', nx
+!!       WRITE (*,*) 'ny ', ny
+!!       WRITE (*,*) 'ny ', ny
+!!       WRITE (*,*) 'ny ', ny
+!!       WRITE (*,*) 'ny ', ny
+!!       WRITE (*,*) 'nz ', nz
+!!       WRITE (*,*) 'nz ', nz
+!!       WRITE (*,*) 'nz ', nz
+!!       WRITE (*,*) 'nz ', nz
+!!       WRITE (*,*) 'noct ', noct
+!!       WRITE (*,*) 'noct ', noct
+!!       WRITE (*,*) 'noct ', noct
+!!       WRITE (*,*) 'noct ', noct
+!!       WRITE (*,*) 'ng ', ng
+!!       WRITE (*,*) 'ng ', ng
+!!       WRITE (*,*) 'ng ', ng
+!!       WRITE (*,*) 'ng ', ng
+!!       WRITE (*, *) 'nang*nx*ny*nz*noct*ng ',nang*nx*ny*nz*noct*ng
+!!       WRITE (*, *) 'nang*nx*ny*nz*noct*ng ',nang*nx*ny*nz*noct*ng
+!!       WRITE (*, *) 'nang*nx*ny*nz*noct*ng ',nang*nx*ny*nz*noct*ng
+!!       WRITE (*, *) 'nang*nx*ny*nz*noct*ng ',nang*nx*ny*nz*noct*ng
        ALLOCATE( ptr_in(nang,nx,ny,nz,noct,ng),                         &
             ptr_out(nang,nx,ny,nz,noct,ng), STAT=ierr )
     ELSE
-       WRITE (*, *) 'solvar_alloc: allocate timedep != 1'
+!!       WRITE (*, *) 'solvar_alloc: allocate timedep != 1'
+!!       WRITE (*, *) 'solvar_alloc: allocate timedep != 1'
+!!       WRITE (*, *) 'solvar_alloc: allocate timedep != 1'
+!!       WRITE (*, *) 'solvar_alloc: allocate timedep != 1'
        ALLOCATE( ptr_in(0,0,0,0,0,0), ptr_out(0,0,0,0,0,0), STAT=ierr )
     END IF
     IF ( ierr /= 0 ) RETURN
@@ -125,14 +152,23 @@ CONTAINS
     !_______________________________________________________________________
 
     array_size = nx*ny*nz*ng
-    write (*,*) 'solvar_alloc: v before flux:',v
-    WRITE (*, *) 'solvar_alloc: allocating array_size: ', array_size
+!    write (*,*) 'solvar_alloc: v before flux:',v
+!    write (*,*) 'solvar_alloc: v before flux:',v
+!!    WRITE (*, *) 'solvar_alloc: allocating array_size: ', array_size
+!!    WRITE (*, *) 'solvar_alloc: allocating array_size: ', array_size
+!!    WRITE (*, *) 'solvar_alloc: allocating array_size: ', array_size
+!!    WRITE (*, *) 'solvar_alloc: allocating array_size: ', array_size
     CALL allocate_flux(array_size, cptr_in)
     CALL C_F_POINTER(cptr_in, flux, [nx,ny,nz,ng])
     !allocate( flux(nx,ny,nz,ng))
-    write (*, *) 'solvar_alloc: allocated flux: ', flux(1:3,1:3,1:3,1:3)
-    WRITE (*, *) 'allocate fluxpo'
-    write (*,*) 'solvar_alloc: v after flux:',v
+!    write (*, *) 'solvar_alloc: allocated flux: ', flux(1:3,1:3,1:3,1:3)
+!    write (*, *) 'solvar_alloc: allocated flux: ', flux(1:3,1:3,1:3,1:3)
+!!    WRITE (*, *) 'allocate fluxpo'
+!!    WRITE (*, *) 'allocate fluxpo'
+!!    WRITE (*, *) 'allocate fluxpo'
+!!    WRITE (*, *) 'allocate fluxpo'
+!    write (*,*) 'solvar_alloc: v after flux:',v
+!    write (*,*) 'solvar_alloc: v after flux:',v
     ALLOCATE( fluxpo(nx,ny,nz,ng),                  &
          fluxpi(nx,ny,nz,ng), fluxm(cmom-1,nx,ny,nz,ng), STAT=ierr )
     IF ( ierr /= 0 ) RETURN
@@ -146,7 +182,10 @@ CONTAINS
     !   Allocate the source arrays.
     !_______________________________________________________________________
 
-    WRITE (*, *) 'allocate q2grp'
+!!    WRITE (*, *) 'allocate q2grp'
+!!    WRITE (*, *) 'allocate q2grp'
+!!    WRITE (*, *) 'allocate q2grp'
+!!    WRITE (*, *) 'allocate q2grp'
     ALLOCATE( q2grp(cmom,nx,ny,nz,ng), qtot(cmom,nx,ny,nz,ng),         &
          STAT=ierr )
     IF ( ierr /= 0 ) RETURN
@@ -158,7 +197,10 @@ CONTAINS
     !   Allocate the cross section expanded to spatial mesh arrays
     !_______________________________________________________________________
 
-    WRITE (*, *) 'allocate t_xs'
+!!    WRITE (*, *) 'allocate t_xs'
+!!    WRITE (*, *) 'allocate t_xs'
+!!    WRITE (*, *) 'allocate t_xs'
+!!    WRITE (*, *) 'allocate t_xs'
     ALLOCATE( t_xs(nx,ny,nz,ng), a_xs(nx,ny,nz,ng),                    &
          s_xs(nmom,nx,ny,nz,ng), STAT=ierr )
     IF ( ierr /= 0 ) RETURN
@@ -171,7 +213,10 @@ CONTAINS
     !   Working arrays
     !_______________________________________________________________________
 
-    WRITE (*, *) 'allocate psii'
+!!    WRITE (*, *) 'allocate psii'
+!!    WRITE (*, *) 'allocate psii'
+!!    WRITE (*, *) 'allocate psii'
+!!    WRITE (*, *) 'allocate psii'
     ALLOCATE( psii(nang,ny,nz,ng), psij(nang,ichunk,nz,ng),            &
          psik(nang,ichunk,ny,ng), STAT=ierr )
     IF ( ierr /= 0 ) RETURN
@@ -184,7 +229,10 @@ CONTAINS
     !   PE boundary flux arrays
     !_______________________________________________________________________
 
-    WRITE (*, *) 'allocate jb_in'
+!!    WRITE (*, *) 'allocate jb_in'
+!!    WRITE (*, *) 'allocate jb_in'
+!!    WRITE (*, *) 'allocate jb_in'
+!!    WRITE (*, *) 'allocate jb_in'
     ALLOCATE( jb_in(nang,ichunk,nz,ng), jb_out(nang,ichunk,nz,ng),     &
          kb_in(nang,ichunk,ny,ng), kb_out(nang,ichunk,ny,ng), STAT=ierr )
     IF ( ierr /= 0 ) RETURN
@@ -198,7 +246,10 @@ CONTAINS
     !   Leakage arrays
     !_______________________________________________________________________
 
-    WRITE (*, *) 'allocate flkx'
+!!    WRITE (*, *) 'allocate flkx'
+!!    WRITE (*, *) 'allocate flkx'
+!!    WRITE (*, *) 'allocate flkx'
+!!    WRITE (*, *) 'allocate flkx'
     ALLOCATE( flkx(nx+1,ny,nz,ng), flky(nx,ny+1,nz,ng),                &
          flkz(nx,ny,nz+1,ng), STAT=ierr )
     IF ( ierr /= 0 ) RETURN

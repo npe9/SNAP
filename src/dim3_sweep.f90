@@ -225,19 +225,24 @@ CONTAINS
           !       Compute the numerator for the update formula
           !_______________________________________________________________________
           if (isnan(pc(1))) then
-             write (*,*) 'dim3_sweep: pc before: ',pc
+!             write (*,*) 'dim3_sweep: pc before: ',pc
+!             write (*,*) 'dim3_sweep: pc before: ',pc
              stop 'pc is a nan'
           end if
           pc = psi + psii(:,j,k)*mu*hi + psij(:,ic,k)*hj + psik(:,ic,j)*hk
-          write (*,*) 'dim3_sweep: pc after: ',pc
+!          write (*,*) 'dim3_sweep: pc after: ',pc
+!          write (*,*) 'dim3_sweep: pc after: ',pc
           if (isnan(pc(1))) then
              stop 'pc is a nan'
           end if
 
-          write (*,*) 'vdelt: ', vdelt
-          write (*,*)  'ptr_in: ', ptr_in(:,i,j,k)
+!          write (*,*) 'vdelt: ', vdelt
+!          write (*,*) 'vdelt: ', vdelt
+!          write (*,*)  'ptr_in: ', ptr_in(:,i,j,k)
+!          write (*,*)  'ptr_in: ', ptr_in(:,i,j,k)
           IF ( vdelt /= zero ) pc = pc + vdelt*ptr_in(:,i,j,k)
-          write (*,*) 'dim3_sweep: pc after vdelt: ',pc
+!          write (*,*) 'dim3_sweep: pc after vdelt: ',pc
+!          write (*,*) 'dim3_sweep: pc after vdelt: ',pc
           if (isnan(pc(1))) then
              stop 'pc is a nan'
           end if
@@ -247,9 +252,12 @@ CONTAINS
           !       Compute the solution of the center. Use DD for edges. Use fixup
           !       if requested.
           !_______________________________________________________________________
+!          write (*,*) 'checking fixup'
+!          write (*,*) 'checking fixup'
 
           IF ( fixup == 0 ) THEN
-
+!             write (*, *) 'dont have to fixup'
+!             write (*, *) 'dont have to fixup'
              psi = pc*dinv(:,i,j,k)
 
              psii(:,j,k) = two*psi - psii(:,j,k)
@@ -266,14 +274,16 @@ CONTAINS
              !_______________________________________________________________________
 
              hv = one; sum_hv = SUM( hv )
-             write (*,*) 'dim3_sweep: pc before dinv: ',pc
+!             write (*,*) 'dim3_sweep: pc before dinv: ',pc
+!             write (*,*) 'dim3_sweep: pc before dinv: ',pc
              if (isnan(pc(1))) then
                 stop 'pc is a nan'
              end if
 
 
              pc = pc * dinv(:,i,j,k)
-             write (*,*) 'dim3_sweep: pc after dinv: ',pc
+!             write (*,*) 'dim3_sweep: pc after dinv: ',pc
+!             write (*,*) 'dim3_sweep: pc after dinv: ',pc
              if (isnan(pc(1))) then
                 stop 'pc is a nan'
              end if
@@ -299,7 +309,8 @@ CONTAINS
                 !           Recompute balance equation numerator and denominator and get
                 !           new cell average flux
                 !_______________________________________________________________________
-                write (*,*) 'dim3_sweep: pc before psii: ',pc
+!                write (*,*) 'dim3_sweep: pc before psii: ',pc
+!                write (*,*) 'dim3_sweep: pc before psii: ',pc
                 if (isnan(pc(1))) then
                    stop 'pc is a nan'
                 end if
@@ -308,7 +319,8 @@ CONTAINS
                 pc = psii(:,j,k)*mu*hi*(one+hv(:,1)) +                     &
                      psij(:,ic,k)*hj*(one+hv(:,2)) +                          &
                      psik(:,ic,j)*hk*(one+hv(:,3))
-                write (*,*) 'dim3_sweep: pc after psii: ',pc
+!                write (*,*) 'dim3_sweep: pc after psii: ',pc
+!                write (*,*) 'dim3_sweep: pc after psii: ',pc
                 if (isnan(pc(1))) then
                    stop 'pc is a nan'
                 end if
@@ -316,14 +328,16 @@ CONTAINS
 
                 IF ( vdelt /= zero )                                       &
                      pc = pc + vdelt*ptr_in(:,i,j,k)*(one+hv(:,4))
-                write (*,*) 'dim3_sweep: pc after vdelt*ptr_in: ',pc
+!                write (*,*) 'dim3_sweep: pc after vdelt*ptr_in: ',pc
+!                write (*,*) 'dim3_sweep: pc after vdelt*ptr_in: ',pc
                 if (isnan(pc(1))) then
                    stop 'pc is a nan'
                 end if
 
 
                 pc = psi + half*pc
-                write (*,*) 'dim3_sweep: pc after half*pc: ',pc
+!                write (*,*) 'dim3_sweep: pc after half*pc: ',pc
+!                write (*,*) 'dim3_sweep: pc after half*pc: ',pc
                 if (isnan(pc(1))) then
                    stop 'pc is a nan'
                 end if
@@ -339,6 +353,8 @@ CONTAINS
                 END WHERE
 
              END DO fixup_loop
+!             write (*,*) 'fixup done, compute edges'
+!             write (*,*) 'fixup done, compute edges'
              !_______________________________________________________________________
              !
              !         Fixup done, compute edges
@@ -352,6 +368,8 @@ CONTAINS
              IF ( vdelt /= zero ) ptr_out(:,i,j,k) = fxhv(:,4) * hv(:,4)
 
           END IF
+!          write (*,*) 'clearing flux array'
+!          write (*,*) 'clearing flux array'
           !_______________________________________________________________________
           !
           !       Clear the flux arrays
@@ -361,6 +379,8 @@ CONTAINS
              flux(i,j,k) = zero
              fluxm(:,i,j,k) = zero
           END IF
+!          write (*,*) 'computing flux elements'
+!          write (*,*) 'computing flux elements'
           !_______________________________________________________________________
           !
           !       Compute the flux moments
@@ -375,6 +395,8 @@ CONTAINS
           !       Calculate min and max scalar fluxes (not used elsewhere
           !       currently)
           !_______________________________________________________________________
+!          write (*,*) 'calculate min and max scalar fluxes'
+!          write (*,*) 'calculate min and max scalar fluxes'
 
           IF ( oct == noct ) THEN
              fmin = MIN( fmin, flux(i,j,k) )
@@ -385,6 +407,8 @@ CONTAINS
           !       Save edge fluxes (dummy if checks for unused non-vacuum BCs)
           !_______________________________________________________________________
 
+!          write (*,*) 'Save edge fluxes'
+!          write (*,*) 'Save edge fluxes'
           IF ( j == jhi ) THEN
              IF ( jd==2 .AND. lasty ) THEN
                 CONTINUE
@@ -404,6 +428,8 @@ CONTAINS
                 kb_out(:,ic,j) = psik(:,ic,j)
              END IF
           END IF
+!          write (*,*) 'compute leakages'
+!          write (*,*) 'compute leakages'
           !_______________________________________________________________________
           !
           !       Compute leakages (not used elsewhere currently)
@@ -428,16 +454,20 @@ CONTAINS
           !
           !       Finish the loops
           !_______________________________________________________________________
+!          write (*,*) 'finish loops'
+!          write (*,*) 'finish loops'
 
        END DO line_loop
        !$OMP END DO
-
+!       write (*,*) 'ending diagonal_loop'
+!       write (*,*) 'ending diagonal_loop'
     END DO diagonal_loop
 
     !$OMP END PARALLEL
     !_______________________________________________________________________
     !_______________________________________________________________________
-
+!    write (*,*) 'ending dim3_sweep'
+!    write (*,*) 'ending dim3_sweep'
   END SUBROUTINE dim3_sweep
 
 

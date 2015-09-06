@@ -95,26 +95,33 @@ MODULE outer_module
     inrdone = .FALSE.
 
     inner_loop: DO inno = 1, iitm
-
+!       write (*, *) 'calling inner'
+!       write (*, *) 'calling inner'
       CALL inner ( inno, iits )
-
+!      write (*, *) 'called inner'
+!      write (*, *) 'called inner'
       IF ( ALL( inrdone ) ) EXIT inner_loop
 
     END DO inner_loop
-
+!    write (*, *) 'finished inner'
+!    write (*, *) 'finished inner'
     sum_iits = SUM( iits )
 
     CALL wtime ( t4 )
     tinners = tinners + t4 - t3
+!    write (*, *) 'calculated tinners'
+!    write (*, *) 'calculated tinners'
 !_______________________________________________________________________
 !
 !   Check outer convergence
 !_______________________________________________________________________
-
+!    write (*, *) 'did outer converge?'
+!    write (*, *) 'did outer converge?'
     CALL otr_conv
 !_______________________________________________________________________
 !_______________________________________________________________________
-
+!    write (*, *) 'finished outer'
+!    write (*, *) 'finished outer'
   END SUBROUTINE outer
 
 
@@ -192,7 +199,8 @@ MODULE outer_module
 !   mesh one scattering order at a time. Start with first. Then compute
 !   source moment with flux.
 !_______________________________________________________________________
-   !write (*,*) 'calling expxs_reg from outer 196' 
+!   write (*,*) 'calling expxs_reg from outer 196' 
+!   write (*,*) 'calling expxs_reg from outer 196' 
  
     CALL expxs_reg ( cs(:,1), map, tc )
 
@@ -207,7 +215,8 @@ MODULE outer_module
 
     DO l = 2, nmom
 
-       !write (*,*) 'calling expxs_reg from outer 209' 
+!       write (*,*) 'calling expxs_reg from outer 209' 
+!       write (*,*) 'calling expxs_reg from outer 209' 
       CALL expxs_reg ( cs(:,l), map, tc )
       DO m = 1, lma(l)
         q(mom,:,:,:) = q(mom,:,:,:) + tc*fm(mom-1,:,:,:)

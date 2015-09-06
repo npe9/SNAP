@@ -111,23 +111,50 @@ MODULE geom_module
 
     ierr = 0
 
-    !WRITE (*,*) 'geom_alloc: allocating'
-    !WRITE (*, *) 'allocing hj'
+!!    !WRITE (*,*) 'geom_alloc: allocating'
+!!    !WRITE (*,*) 'geom_alloc: allocating'
+!!    !WRITE (*,*) 'geom_alloc: allocating'
+!!    !WRITE (*,*) 'geom_alloc: allocating'
+!!    !WRITE (*, *) 'allocing hj'
+!!    !WRITE (*, *) 'allocing hj'
+!!    !WRITE (*, *) 'allocing hj'
+!!    !WRITE (*, *) 'allocing hj'
     ALLOCATE( hj(nang), STAT=ierr)
     IF ( ierr /= 0 ) RETURN
-    !WRITE (*, *) 'allocing hk'
+!!    !WRITE (*, *) 'allocing hk'
+!!    !WRITE (*, *) 'allocing hk'
+!!    !WRITE (*, *) 'allocing hk'
+!!    !WRITE (*, *) 'allocing hk'
     ALLOCATE( hk(nang), STAT=ierr)
     IF ( ierr /= 0 ) RETURN
-    !WRITE (*, *) 'allocing dinv nang ',nang, ' nx ', nx, ' ny ', ny, ' nz ', nz, ' ng ', ng, ' nang*nx*ny*nz*ng ', nang*nx*ny*nz*ng
+!!    !WRITE (*, *) 'allocing dinv nang ',nang, ' nx ', nx, ' ny ', ny, ' nz ', nz, ' ng ', ng, ' nang*nx*ny*nz*ng ', nang*nx*ny*nz*ng
+!!    !WRITE (*, *) 'allocing dinv nang ',nang, ' nx ', nx, ' ny ', ny, ' nz ', nz, ' ng ', ng, ' nang*nx*ny*nz*ng ', nang*nx*ny*nz*ng
+!!    !WRITE (*, *) 'allocing dinv nang ',nang, ' nx ', nx, ' ny ', ny, ' nz ', nz, ' ng ', ng, ' nang*nx*ny*nz*ng ', nang*nx*ny*nz*ng
+!!    !WRITE (*, *) 'allocing dinv nang ',nang, ' nx ', nx, ' ny ', ny, ' nz ', nz, ' ng ', ng, ' nang*nx*ny*nz*ng ', nang*nx*ny*nz*ng
     ALLOCATE( dinv(nang, nx, ny, nz, ng), STAT=ierr)
     IF ( ierr /= 0 ) RETURN
     !ALLOCATE( hj(nang), hk(nang), dinv(nang,nx,ny,nz,ng), STAT=ierr )
-    !WRITE (*, *) 'hj(nang): ',hj(nang)
-    !WRITE (*, *) 'hk(nang): ', hk(nang)
-    !WRITE (*, *) 'dinv(nang, nx, ny, nz, ng)'
-    !WRITE (*, *) 'ierr: ', ierr
+!!    !WRITE (*, *) 'hj(nang): ',hj(nang)
+!!    !WRITE (*, *) 'hj(nang): ',hj(nang)
+!!    !WRITE (*, *) 'hj(nang): ',hj(nang)
+!!    !WRITE (*, *) 'hj(nang): ',hj(nang)
+!!    !WRITE (*, *) 'hk(nang): ', hk(nang)
+!!    !WRITE (*, *) 'hk(nang): ', hk(nang)
+!!    !WRITE (*, *) 'hk(nang): ', hk(nang)
+!!    !WRITE (*, *) 'hk(nang): ', hk(nang)
+!!    !WRITE (*, *) 'dinv(nang, nx, ny, nz, ng)'
+!!    !WRITE (*, *) 'dinv(nang, nx, ny, nz, ng)'
+!!    !WRITE (*, *) 'dinv(nang, nx, ny, nz, ng)'
+!!    !WRITE (*, *) 'dinv(nang, nx, ny, nz, ng)'
+!!    !WRITE (*, *) 'ierr: ', ierr
+!!    !WRITE (*, *) 'ierr: ', ierr
+!!    !WRITE (*, *) 'ierr: ', ierr
+!!    !WRITE (*, *) 'ierr: ', ierr
 
-    !WRITE (*, *) 'geom_alloc: alloced ierr',ierr
+!!    !WRITE (*, *) 'geom_alloc: alloced ierr',ierr
+!!    !WRITE (*, *) 'geom_alloc: alloced ierr',ierr
+!!    !WRITE (*, *) 'geom_alloc: alloced ierr',ierr
+!!    !WRITE (*, *) 'geom_alloc: alloced ierr',ierr
     IF ( ierr /= 0 ) RETURN
 
     hi = zero

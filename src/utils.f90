@@ -223,7 +223,8 @@ CONTAINS
         ELSE
             WRITE( *, 101 ) error
         END IF
-        WRITE(*,*) error
+!        WRITE(*,*) error
+!        WRITE(*,*) error
         !_______________________________________________________________________
 
         101 FORMAT( 3X, A, / )

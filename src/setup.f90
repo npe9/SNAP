@@ -88,10 +88,16 @@ CONTAINS
     !   Allocate needed arrays
     !_______________________________________________________________________
     CALL setup_alloc ( flg, ierr, error )
-    WRITE (*, *) 'setup alloced'
+!!    WRITE (*, *) 'setup alloced'
+!!    WRITE (*, *) 'setup alloced'
+!!    WRITE (*, *) 'setup alloced'
+!!    WRITE (*, *) 'setup alloced'
     IF ( ierr /= 0 ) THEN
        CALL print_error ( ounit, error )
-       WRITE (*, *) 'setup_alloc failure'
+!!       WRITE (*, *) 'setup_alloc failure'
+!!       WRITE (*, *) 'setup_alloc failure'
+!!       WRITE (*, *) 'setup_alloc failure'
+!!       WRITE (*, *) 'setup_alloc failure'
        CALL stop_run ( flg, 0, 0 )
     END IF
     !_______________________________________________________________________
@@ -103,34 +109,85 @@ CONTAINS
     !   expansion basis function array.
     !_______________________________________________________________________
 
-    WRITE (*, *) 'setting up delta'
+!!    WRITE (*, *) 'setting up delta'
+!!    WRITE (*, *) 'setting up delta'
+!!    WRITE (*, *) 'setting up delta'
+!!    WRITE (*, *) 'setting up delta'
     CALL setup_delta
-    WRITE (*, *) 'set up delta'
-    WRITE (*, *) 'setup_vel'
+!!    WRITE (*, *) 'set up delta'
+!!    WRITE (*, *) 'set up delta'
+!!    WRITE (*, *) 'set up delta'
+!!    WRITE (*, *) 'set up delta'
+!!    WRITE (*, *) 'setup_vel'
+!!    WRITE (*, *) 'setup_vel'
+!!    WRITE (*, *) 'setup_vel'
+!!    WRITE (*, *) 'setup_vel'
     CALL setup_vel
-    WRITE (*, *) 'setup_velled'
-    WRITE (*, *) 'setup_angle'
+!!    WRITE (*, *) 'setup_velled'
+!!    WRITE (*, *) 'setup_velled'
+!!    WRITE (*, *) 'setup_velled'
+!!    WRITE (*, *) 'setup_velled'
+!!    WRITE (*, *) 'setup_angle'
+!!    WRITE (*, *) 'setup_angle'
+!!    WRITE (*, *) 'setup_angle'
+!!    WRITE (*, *) 'setup_angle'
     CALL setup_angle
-    WRITE (*, *) 'setup_angled'
-    WRITE (*, *) 'setup_mat'
+!!    WRITE (*, *) 'setup_angled'
+!!    WRITE (*, *) 'setup_angled'
+!!    WRITE (*, *) 'setup_angled'
+!!    WRITE (*, *) 'setup_angled'
+!!    WRITE (*, *) 'setup_mat'
+!!    WRITE (*, *) 'setup_mat'
+!!    WRITE (*, *) 'setup_mat'
+!!    WRITE (*, *) 'setup_mat'
     CALL setup_mat ( mis, mie, mjs, mje, mks, mke )
-    WRITE (*, *) 'setup_matted'
-    WRITE (*, *) 'setup_data'
+!!    WRITE (*, *) 'setup_matted'
+!!    WRITE (*, *) 'setup_matted'
+!!    WRITE (*, *) 'setup_matted'
+!!    WRITE (*, *) 'setup_matted'
+!!    WRITE (*, *) 'setup_data'
+!!    WRITE (*, *) 'setup_data'
+!!    WRITE (*, *) 'setup_data'
+!!    WRITE (*, *) 'setup_data'
     CALL setup_data
-    WRITE (*, *) 'setup_dataed'
-    WRITE (*, *) 'expcoeff'
+!!    WRITE (*, *) 'setup_dataed'
+!!    WRITE (*, *) 'setup_dataed'
+!!    WRITE (*, *) 'setup_dataed'
+!!    WRITE (*, *) 'setup_dataed'
+!!    WRITE (*, *) 'expcoeff'
+!!    WRITE (*, *) 'expcoeff'
+!!    WRITE (*, *) 'expcoeff'
+!!    WRITE (*, *) 'expcoeff'
     CALL expcoeff ( ndimen )
-    WRITE (*, *) 'expcoeffed'
-    WRITE (*, *) 'setup_srcing'
+!!    WRITE (*, *) 'expcoeffed'
+!!    WRITE (*, *) 'expcoeffed'
+!!    WRITE (*, *) 'expcoeffed'
+!!    WRITE (*, *) 'expcoeffed'
+!!    WRITE (*, *) 'setup_srcing'
+!!    WRITE (*, *) 'setup_srcing'
+!!    WRITE (*, *) 'setup_srcing'
+!!    WRITE (*, *) 'setup_srcing'
     CALL setup_src ( qis, qie, qjs, qje, qks, qke, ierr, error )
-    WRITE (*, *) 'setup_srced'
+!!    WRITE (*, *) 'setup_srced'
+!!    WRITE (*, *) 'setup_srced'
+!!    WRITE (*, *) 'setup_srced'
+!!    WRITE (*, *) 'setup_srced'
     IF ( ierr /= 0 ) THEN
-       WRITE (*, *) 'stupid piece of crud error'
+!!       WRITE (*, *) 'stupid piece of crud error'
+!!       WRITE (*, *) 'stupid piece of crud error'
+!!       WRITE (*, *) 'stupid piece of crud error'
+!!       WRITE (*, *) 'stupid piece of crud error'
        CALL print_error ( ounit, error )
-       WRITE (*, *) 'setup_src error'
+!!       WRITE (*, *) 'setup_src error'
+!!       WRITE (*, *) 'setup_src error'
+!!       WRITE (*, *) 'setup_src error'
+!!       WRITE (*, *) 'setup_src error'
        CALL stop_run ( 2, 0, 0 )
     END IF
-    WRITE (*, *) 'past setup_src error'
+!!    WRITE (*, *) 'past setup_src error'
+!!    WRITE (*, *) 'past setup_src error'
+!!    WRITE (*, *) 'past setup_src error'
+!!    WRITE (*, *) 'past setup_src error'
     !_______________________________________________________________________
     !
     !   Echo the data from this module to the output file. If requested via
@@ -138,26 +195,50 @@ CONTAINS
     !_______________________________________________________________________
 
     IF ( iproc == root ) THEN
-       WRITE (*, *) 'doing setup echo'
+!!       WRITE (*, *) 'doing setup echo'
+!!       WRITE (*, *) 'doing setup echo'
+!!       WRITE (*, *) 'doing setup echo'
+!!       WRITE (*, *) 'doing setup echo'
        CALL setup_echo ( mis, mie, mjs, mje, mks, mke, qis, qie, qjs,   &
             qje, qks, qke )
-       WRITE (*, *) 'did setup echo'
+!!       WRITE (*, *) 'did setup echo'
+!!       WRITE (*, *) 'did setup echo'
+!!       WRITE (*, *) 'did setup echo'
+!!       WRITE (*, *) 'did setup echo'
        IF ( scatp == 1 ) CALL setup_scatp ( ierr, error )
-       WRITE (*, *) 'did setup scatp'
+!!       WRITE (*, *) 'did setup scatp'
+!!       WRITE (*, *) 'did setup scatp'
+!!       WRITE (*, *) 'did setup scatp'
+!!       WRITE (*, *) 'did setup scatp'
     END IF
 
-    WRITE (*, *) 'glmaxing'
+!!    WRITE (*, *) 'glmaxing'
+!!    WRITE (*, *) 'glmaxing'
+!!    WRITE (*, *) 'glmaxing'
+!!    WRITE (*, *) 'glmaxing'
     CALL glmax ( ierr, comm_snap )
-    WRITE (*, *) 'glmaxed'
+!!    WRITE (*, *) 'glmaxed'
+!!    WRITE (*, *) 'glmaxed'
+!!    WRITE (*, *) 'glmaxed'
+!!    WRITE (*, *) 'glmaxed'
     IF ( ierr /= 0 ) THEN
        CALL print_error ( ounit, error )
-       WRITE (*, *) 'glmax error'
+!!       WRITE (*, *) 'glmax error'
+!!       WRITE (*, *) 'glmax error'
+!!       WRITE (*, *) 'glmax error'
+!!       WRITE (*, *) 'glmax error'
        CALL stop_run ( 3, 0, 0 )
     END IF
 
-    WRITE (*, *) 'wtiming'
+!!    WRITE (*, *) 'wtiming'
+!!    WRITE (*, *) 'wtiming'
+!!    WRITE (*, *) 'wtiming'
+!!    WRITE (*, *) 'wtiming'
     CALL wtime ( t2 )
-    WRITE (*, *) 'wtimed'
+!!    WRITE (*, *) 'wtimed'
+!!    WRITE (*, *) 'wtimed'
+!!    WRITE (*, *) 'wtimed'
+!!    WRITE (*, *) 'wtimed'
     tset = t2 - t1
     !_______________________________________________________________________
     !_______________________________________________________________________
@@ -181,21 +262,27 @@ CONTAINS
     flg = 0
     ierr = 0
     error = ' '
-    write (*,*) "allocate"
+!    write (*,*) "allocate"
+!    write (*,*) "allocate"
     CALL sn_allocate ( ndimen, ierr )
-    write (*,*) "glmax"
+!    write (*,*) "glmax"
+!    write (*,*) "glmax"
     CALL glmax ( ierr, comm_snap )
     IF ( ierr /= 0 ) THEN
        error = '***ERROR: SETUP_ALLOC: Allocation error in SN_ALLOCATE'
        RETURN
     END IF
-    write (*,*) "setup1"
+!    write (*,*) "setup1"
+!    write (*,*) "setup1"
     CALL setup1(nx, ny, nz, ng, segment)
-    write (*,*) "newproc"
+!    write (*,*) "newproc"
+!    write (*,*) "newproc"
     CALL data_allocate ( nx, ny, nz, nmom, nang, noct, timedep, ierr )
-    write (*, *) 'data allocated'
+!    write (*, *) 'data allocated'
+!    write (*, *) 'data allocated'
     CALL glmax ( ierr, comm_snap )
-    write (*, *) 'glmaxed'
+!    write (*, *) 'glmaxed'
+!    write (*, *) 'glmaxed'
     IF ( ierr /= 0 ) THEN
        flg = 1
        error = '***ERROR: SETUP_ALLOC: Allocation error in DATA_ALLOCATE'
@@ -220,10 +307,14 @@ CONTAINS
     dx = lx / REAL( nx, r_knd )
     IF ( ndimen > 1 ) dy = ly / REAL( ny_gl, r_knd )
     IF ( ndimen > 2 ) dz = lz / REAL( nz_gl, r_knd )
-    write (*,*) 'tf ',tf
-    write (*,*) 'nsteps ', nsteps
-    write (*,*) 'REAL( nsteps, r_kind ) ', REAL( nsteps, r_knd )
-    write (*,*) 'dt ', tf / REAL( nsteps, r_knd )
+!    write (*,*) 'tf ',tf
+!    write (*,*) 'tf ',tf
+!    write (*,*) 'nsteps ', nsteps
+!    write (*,*) 'nsteps ', nsteps
+!    write (*,*) 'REAL( nsteps, r_kind ) ', REAL( nsteps, r_knd )
+!    write (*,*) 'REAL( nsteps, r_kind ) ', REAL( nsteps, r_knd )
+!    write (*,*) 'dt ', tf / REAL( nsteps, r_knd )
+!    write (*,*) 'dt ', tf / REAL( nsteps, r_knd )
     !   stop 'to see dt'
     IF ( timedep == 1 ) dt = tf / REAL( nsteps, r_knd )
     CALL setup2(dx, dy, dz)
@@ -254,14 +345,19 @@ CONTAINS
     IF ( timedep == 0 ) RETURN
 
     DO g = 1, ng
-       write (*,*) 'ng ',ng, 'g ', g
+!       write (*,*) 'ng ',ng, 'g ', g
+!       write (*,*) 'ng ',ng, 'g ', g
        t = ng - g + 1
-       write (*,*) 'v(',g,') ',v(g)
-       write (*,*) 't ',t
+!       write (*,*) 'v(',g,') ',v(g)
+!       write (*,*) 'v(',g,') ',v(g)
+!       write (*,*) 't ',t
+!       write (*,*) 't ',t
        v(g) = REAL( t, r_knd )
-       write (*,*) 'v(',g,') ',v(g)
+!       write (*,*) 'v(',g,') ',v(g)
+!       write (*,*) 'v(',g,') ',v(g)
     END DO
-    write (*,*) 'v ',v
+!    write (*,*) 'v ',v
+!    write (*,*) 'v ',v
     !_______________________________________________________________________
     !_______________________________________________________________________
 
@@ -664,16 +760,28 @@ CONTAINS
     INTEGER(i_knd) :: i, j
     !_______________________________________________________________________
 
-    WRITE (*, *) 'writing star'
+!!    WRITE (*, *) 'writing star'
+!!    WRITE (*, *) 'writing star'
+!!    WRITE (*, *) 'writing star'
+!!    WRITE (*, *) 'writing star'
     WRITE( ounit, 131 ) ( star, i = 1, 80 )
-    WRITE (*, *) 'writing 132 and ndimen'
+!!    WRITE (*, *) 'writing 132 and ndimen'
+!!    WRITE (*, *) 'writing 132 and ndimen'
+!!    WRITE (*, *) 'writing 132 and ndimen'
+!!    WRITE (*, *) 'writing 132 and ndimen'
     WRITE( ounit, 132 )
     WRITE( ounit, 133 ) ndimen, nx, ny_gl, nz_gl, lx, ly, lz, dx, dy, dz
-    WRITE (*, *) 'writing 134 and nmom'
+!!    WRITE (*, *) 'writing 134 and nmom'
+!!    WRITE (*, *) 'writing 134 and nmom'
+!!    WRITE (*, *) 'writing 134 and nmom'
+!!    WRITE (*, *) 'writing 134 and nmom'
     WRITE( ounit, 134 )
     WRITE( ounit, 135 ) nmom, nang, noct, w(1)
     WRITE( ounit, 136 )
-    WRITE (*, *) 'selecting on ndimen'
+!!    WRITE (*, *) 'selecting on ndimen'
+!!    WRITE (*, *) 'selecting on ndimen'
+!!    WRITE (*, *) 'selecting on ndimen'
+!!    WRITE (*, *) 'selecting on ndimen'
     SELECT CASE ( ndimen )
     CASE ( 1 )
        WRITE( ounit, 137 ) ( mu(i), i = 1, nang )
@@ -683,19 +791,37 @@ CONTAINS
        WRITE( ounit, 139 ) ( mu(i), eta(i), xi(i), i = 1, nang )
     END SELECT
 
-    WRITE (*, *) 'writing 140'
+!!    WRITE (*, *) 'writing 140'
+!!    WRITE (*, *) 'writing 140'
+!!    WRITE (*, *) 'writing 140'
+!!    WRITE (*, *) 'writing 140'
     WRITE( ounit, 140 )
-    WRITE (*, *) 'writing 141'
+!!    WRITE (*, *) 'writing 141'
+!!    WRITE (*, *) 'writing 141'
+!!    WRITE (*, *) 'writing 141'
+!!    WRITE (*, *) 'writing 141'
     WRITE( ounit, 141 ) mat_opt, nmat
-    WRITE (*, *) 'writing 142'
+!!    WRITE (*, *) 'writing 142'
+!!    WRITE (*, *) 'writing 142'
+!!    WRITE (*, *) 'writing 142'
+!!    WRITE (*, *) 'writing 142'
     WRITE( ounit, 142 )
-    WRITE (*, *) 'writing mat_opt'
+!!    WRITE (*, *) 'writing mat_opt'
+!!    WRITE (*, *) 'writing mat_opt'
+!!    WRITE (*, *) 'writing mat_opt'
+!!    WRITE (*, *) 'writing mat_opt'
     IF( mat_opt > 0 ) WRITE( ounit, 143 ) mis, mjs, mks, mie, mje, mke
 
-    WRITE (*, *) 'writing 144'
+!!    WRITE (*, *) 'writing 144'
+!!    WRITE (*, *) 'writing 144'
+!!    WRITE (*, *) 'writing 144'
+!!    WRITE (*, *) 'writing 144'
     WRITE( ounit, 144 )
     WRITE( ounit, 145 ) src_opt
-    WRITE (*, *) 'writing src_opt'
+!!    WRITE (*, *) 'writing src_opt'
+!!    WRITE (*, *) 'writing src_opt'
+!!    WRITE (*, *) 'writing src_opt'
+!!    WRITE (*, *) 'writing src_opt'
     IF ( src_opt < 3 ) THEN
        WRITE( ounit, 146 )
        WRITE( ounit, 147 ) qis, qjs, qks, qie, qje, qke
@@ -703,7 +829,10 @@ CONTAINS
        WRITE( ounit, 1471 )
     END IF
 
-    WRITE (*, *) 'writing 148'
+!!    WRITE (*, *) 'writing 148'
+!!    WRITE (*, *) 'writing 148'
+!!    WRITE (*, *) 'writing 148'
+!!    WRITE (*, *) 'writing 148'
     WRITE( ounit, 148 )
     WRITE( ounit, 149 ) ng
     DO j = 1, nmat
@@ -713,19 +842,29 @@ CONTAINS
             i = 1, ng )
     END DO
 
-    WRITE (*, *) 'writing timedep'
+!!    WRITE (*, *) 'writing timedep'
+!!    WRITE (*, *) 'writing timedep'
+!!    WRITE (*, *) 'writing timedep'
+!!    WRITE (*, *) 'writing timedep'
     IF ( timedep == 1 ) THEN
-       WRITE(*, *) 'writing 153'
+!       WRITE(*, *) 'writing 153'
+!       WRITE(*, *) 'writing 153'
        WRITE( ounit, 153 )
-       WRITE(*, *) 'writing 154'
+!       WRITE(*, *) 'writing 154'
+!       WRITE(*, *) 'writing 154'
        WRITE( ounit, 154 ) tf, nsteps, dt
-       WRITE(*,*) 'writing 155'
+!       WRITE(*,*) 'writing 155'
+!       WRITE(*,*) 'writing 155'
        WRITE( ounit, 155 )
-       WRITE(*, *) 'writing 156'
+!       WRITE(*, *) 'writing 156'
+!       WRITE(*, *) 'writing 156'
        WRITE( ounit, 156 ) ( i, v(i), i = 1, ng )
     END IF
 
-    WRITE (*, *) 'writing 157'
+!!    WRITE (*, *) 'writing 157'
+!!    WRITE (*, *) 'writing 157'
+!!    WRITE (*, *) 'writing 157'
+!!    WRITE (*, *) 'writing 157'
     WRITE( ounit, 157 )
     WRITE( ounit, 158 ) epsi, iitm, oitm, timedep, it_det, fluxp, fixup
 
@@ -740,7 +879,10 @@ CONTAINS
        WRITE( ounit, 186 ) nnested
     END IF
 
-    WRITE (*, *) 'writing 159'
+!!    WRITE (*, *) 'writing 159'
+!!    WRITE (*, *) 'writing 159'
+!!    WRITE (*, *) 'writing 159'
+!!    WRITE (*, *) 'writing 159'
     WRITE( ounit, 159 ) ( star, i = 1, 80 )
     !_______________________________________________________________________
 

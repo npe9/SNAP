@@ -115,7 +115,7 @@ static void *my_malloc_hook (size_t, const void *);
 static void my_free_hook (void*, const void *);
 
 /* Override initializing hook from the C library. */
-void (*__MALLOC_HOOK_VOLATILE __malloc_initialize_hook) (void) = my_init_hook;
+//void (*__MALLOC_HOOK_VOLATILE __malloc_initialize_hook) (void) = my_init_hook;
 void  (*old_malloc_hook)(size_t size, const void *caller);
 void (*old_free_hook) (void *ptr, const void *caller);
 
@@ -168,6 +168,15 @@ my_free_hook (void *ptr, const void *caller)
 	/* Restore our own hooks */
 	__malloc_hook = my_malloc_hook;
 	__free_hook = my_free_hook;
+}
+
+int mmap_off_()
+{
+	if(mallopt(M_MMAP_MAX, 0) <= 0){
+		printf("mallopt failed\n");
+		exit(-1);
+	}
+	return 1;
 }
 
 int setup1_(int *nx, int *ny, int *nz, int *ng, char *segment) {

@@ -106,9 +106,11 @@ CONTAINS
        ALLOCATE( v(0), STAT=istat )
     END IF
     IF ( istat /= 0 ) RETURN
-    write (*,*) 'data_alloc before v ', v
+!    write (*,*) 'data_alloc before v ', v
+!    write (*,*) 'data_alloc before v ', v
     v = zero
-    write (*,*) 'data_alloc after v ', v
+!    write (*,*) 'data_alloc after v ', v
+!    write (*,*) 'data_alloc after v ', v
     !_______________________________________________________________________
     !
     !   Allocate the material identifier array. ny and nz are 1 if not
@@ -130,14 +132,16 @@ CONTAINS
     !_______________________________________________________________________
 
     IF ( src_opt < 3 ) THEN
-       write (*,*) 'src_opt < 3'
+!       write (*,*) 'src_opt < 3'
+!       write (*,*) 'src_opt < 3'
        ALLOCATE(qi(nx,ny,nz,ng), STAT=istat)
        IF ( istat /= 0 ) RETURN
        ALLOCATE(qim(0,0,0,0,0,0), STAT=istat )
        IF ( istat /= 0 ) RETURN
        qi = zero
     ELSE
-       write (*,*) 'src_opt >= 3'
+!       write (*,*) 'src_opt >= 3'
+!       write (*,*) 'src_opt >= 3'
        ALLOCATE(qi(nx,ny,nz,ng), STAT=istat)
        IF ( istat /= 0 ) RETURN
        ALLOCATE(qim(nang,nx,ny,nz,noct,ng), STAT=istat)
@@ -180,18 +184,36 @@ CONTAINS
     !-----------------------------------------------------------------------
     !_______________________________________________________________________
 
-    !WRITE (*,*) 'dealloc v'
+!!    !WRITE (*,*) 'dealloc v'
+!!    !WRITE (*,*) 'dealloc v'
+!!    !WRITE (*,*) 'dealloc v'
+!!    !WRITE (*,*) 'dealloc v'
     !    DEALLOCATE( v )
-    !WRITE (*,*) 'dealloc mat'
+!!    !WRITE (*,*) 'dealloc mat'
+!!    !WRITE (*,*) 'dealloc mat'
+!!    !WRITE (*,*) 'dealloc mat'
+!!    !WRITE (*,*) 'dealloc mat'
     ! I think this needs the C call
     !DEALLOCATE( mat )
-    !WRITE (*,*) 'dealloc qi qim'
+!!    !WRITE (*,*) 'dealloc qi qim'
+!!    !WRITE (*,*) 'dealloc qi qim'
+!!    !WRITE (*,*) 'dealloc qi qim'
+!!    !WRITE (*,*) 'dealloc qi qim'
     !DEALLOCATE( qi, qim )
-    !WRITE (*,*) 'dealloc sigt siga sigs'
+!!    !WRITE (*,*) 'dealloc sigt siga sigs'
+!!    !WRITE (*,*) 'dealloc sigt siga sigs'
+!!    !WRITE (*,*) 'dealloc sigt siga sigs'
+!!    !WRITE (*,*) 'dealloc sigt siga sigs'
     !DEALLOCATE( sigt, siga, sigs )
-    !WRITE (*,*) 'dealloc slgg'
+!!    !WRITE (*,*) 'dealloc slgg'
+!!    !WRITE (*,*) 'dealloc slgg'
+!!    !WRITE (*,*) 'dealloc slgg'
+!!    !WRITE (*,*) 'dealloc slgg'
     !DEALLOCATE( slgg )
-    !WRITE (*,*) 'dealloc vdelt'
+!!    !WRITE (*,*) 'dealloc vdelt'
+!!    !WRITE (*,*) 'dealloc vdelt'
+!!    !WRITE (*,*) 'dealloc vdelt'
+!!    !WRITE (*,*) 'dealloc vdelt'
     !DEALLOCATE( vdelt )
     !_______________________________________________________________________
     !_______________________________________________________________________

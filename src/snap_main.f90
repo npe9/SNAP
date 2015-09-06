@@ -99,13 +99,19 @@ PROGRAM snap_main
 ! Perform calls that set up the parallel environment in MPI and
 ! OpenMP. Also starts the timer. Update parallel setup time.
 !_______________________________________________________________________
-
+  call mmap_off()
   ierr = 0
   error = ' '
-  WRITE (*,*) 'piniting'
+!!  WRITE (*,*) 'piniting'
+!!  WRITE (*,*) 'piniting'
+!!  WRITE (*,*) 'piniting'
+!!  WRITE (*,*) 'piniting'
   CALL pinit ( t1 )
 
-  WRITE (*,*) 'wtiming'
+!!  WRITE (*,*) 'wtiming'
+!!  WRITE (*,*) 'wtiming'
+!!  WRITE (*,*) 'wtiming'
+!!  WRITE (*,*) 'wtiming'
   CALL wtime ( t2 )
   tparset = tparset + t2 - t1
 !_______________________________________________________________________
@@ -115,32 +121,56 @@ PROGRAM snap_main
 !_______________________________________________________________________
 
 
-  WRITE (*,*) 'cmdarging'
+!!  WRITE (*,*) 'cmdarging'
+!!  WRITE (*,*) 'cmdarging'
+!!  WRITE (*,*) 'cmdarging'
+!!  WRITE (*,*) 'cmdarging'
   CALL cmdarg ( ierr, error )
-  WRITE (*,*) 'share_initing'
+!!  WRITE (*,*) 'share_initing'
+!!  WRITE (*,*) 'share_initing'
+!!  WRITE (*,*) 'share_initing'
+!!  WRITE (*,*) 'share_initing'
   CALL share_init( iproc, segment )
-  WRITE (*,*) 'bcasting'
+!!  WRITE (*,*) 'bcasting'
+!!  WRITE (*,*) 'bcasting'
+!!  WRITE (*,*) 'bcasting'
+!!  WRITE (*,*) 'bcasting'
   CALL bcast ( ierr, comm_snap, root )
-  WRITE (*,*) 'ierr checking'
+!!  WRITE (*,*) 'ierr checking'
+!!  WRITE (*,*) 'ierr checking'
+!!  WRITE (*,*) 'ierr checking'
+!!  WRITE (*,*) 'ierr checking'
   IF ( ierr /= 0 ) THEN
     CALL print_error ( 0, error )
-    WRITE (*, *) 'got an ierr!'
+!!    WRITE (*, *) 'got an ierr!'
+!!    WRITE (*, *) 'got an ierr!'
+!!    WRITE (*, *) 'got an ierr!'
+!!    WRITE (*, *) 'got an ierr!'
     CALL stop_run ( 0, 0, 0 )
   END IF
 ! so how do we change this?
 ! can do I have to do it this way?
 ! wait, is it dong some magic with mpi?
-  WRITE (*,*) 'checking stdin'
+!!  WRITE (*,*) 'checking stdin'
+!!  WRITE (*,*) 'checking stdin'
+!!  WRITE (*,*) 'checking stdin'
+!!  WRITE (*,*) 'checking stdin'
   IF (ifile == 'stdin') THEN
     iunit = 5
   ELSE
     CALL open_file ( iunit, ifile, 'OLD', 'READ', ierr, error )
   END IF
 
-  WRITE (*,*) 'bcasting'
+!!  WRITE (*,*) 'bcasting'
+!!  WRITE (*,*) 'bcasting'
+!!  WRITE (*,*) 'bcasting'
+!!  WRITE (*,*) 'bcasting'
   CALL bcast ( ierr, comm_snap, root )
   IF ( ierr /= 0 ) THEN
-      WRITE (*, *) 'bcast error'
+!!      WRITE (*, *) 'bcast error'
+!!      WRITE (*, *) 'bcast error'
+!!      WRITE (*, *) 'bcast error'
+!!      WRITE (*, *) 'bcast error'
     CALL print_error ( 0, error )
     CALL stop_run ( 0, 0, 0 )
   END IF
@@ -149,10 +179,16 @@ PROGRAM snap_main
   ELSE
     CALL open_file ( ounit, ofile, 'REPLACE', 'WRITE', ierr, error )
 END IF
-WRITE (*, *) 'second bcasting'
+!!WRITE (*, *) 'second bcasting'
+!!WRITE (*, *) 'second bcasting'
+!!WRITE (*, *) 'second bcasting'
+!!WRITE (*, *) 'second bcasting'
   CALL bcast ( ierr, comm_snap, root )
   IF ( ierr /= 0 ) THEN
-      WRITE (*, *) 'second bcast err'
+!!      WRITE (*, *) 'second bcast err'
+!!      WRITE (*, *) 'second bcast err'
+!!      WRITE (*, *) 'second bcast err'
+!!      WRITE (*, *) 'second bcast err'
     CALL print_error ( 0, error )
     CALL stop_run ( 0, 0, 0 )
   END IF
@@ -170,10 +206,16 @@ WRITE (*, *) 'second bcasting'
    CALL read_input
   END IF
 
-  WRITE (*,*) "close file"
+!!  WRITE (*,*) "close file"
+!!  WRITE (*,*) "close file"
+!!  WRITE (*,*) "close file"
+!!  WRITE (*,*) "close file"
   CALL close_file ( iunit, ierr, error )
   
-  WRITE (*,*) "bcast"
+!!  WRITE (*,*) "bcast"
+!!  WRITE (*,*) "bcast"
+!!  WRITE (*,*) "bcast"
+!!  WRITE (*,*) "bcast"
   CALL bcast ( ierr, comm_snap, root )
   IF ( ierr /= 0 ) THEN
     CALL print_error ( ounit, error )
@@ -185,7 +227,10 @@ WRITE (*, *) 'second bcasting'
 ! if necessary. Don't stop run. Set up the SDD MPI topology.
 !_______________________________________________________________________
 
-  WRITE (*,*) "wtime"
+!!  WRITE (*,*) "wtime"
+!!  WRITE (*,*) "wtime"
+!!  WRITE (*,*) "wtime"
+!!  WRITE (*,*) "wtime"
   CALL wtime ( t3 )
 
   CALL pinit_omp ( ierr, error )
@@ -193,75 +238,139 @@ WRITE (*, *) 'second bcasting'
 
   CALL pcomm_set
 
-  WRITE (*,*) "pcomm_set"
+!!  WRITE (*,*) "pcomm_set"
+!!  WRITE (*,*) "pcomm_set"
+!!  WRITE (*,*) "pcomm_set"
+!!  WRITE (*,*) "pcomm_set"
   CALL wtime ( t4 )
   tparset = tparset + t4 - t3
 !_______________________________________________________________________
 !
 ! Setup problem
 !_______________________________________________________________________
-  !write (*,*) "setting up" 
+  !!write (*,*) "setting up" 
+  !!write (*,*) "setting up" 
   CALL setup
   
-  !WRITE (*,*) "set up"
+!!  !WRITE (*,*) "set up"
+!!  !WRITE (*,*) "set up"
+!!  !WRITE (*,*) "set up"
+!!  !WRITE (*,*) "set up"
 !_______________________________________________________________________
 !
 ! Call for the problem solution
 !_______________________________________________________________________
 
-  !  WRITE (*, *) 'translving'
+!!  !  WRITE (*, *) 'translving'
+!!  !  WRITE (*, *) 'translving'
+!!  !  WRITE (*, *) 'translving'
+!!  !  WRITE (*, *) 'translving'
   CALL translv
- WRITE (*, *) 'translved'
+!! WRITE (*, *) 'translved'
+!! WRITE (*, *) 'translved'
+!! WRITE (*, *) 'translved'
+!! WRITE (*, *) 'translved'
 !_______________________________________________________________________
 !
 ! Output the results. Print the timing summary.
 !_______________________________________________________________________
 
-    WRITE (*, *) 'outputting'
+!!    WRITE (*, *) 'outputting'
+!!    WRITE (*, *) 'outputting'
+!!    WRITE (*, *) 'outputting'
+!!    WRITE (*, *) 'outputting'
   CALL output
-  WRITE (*, *) 'outputted'
-!  WRITE (*, *) 'time summing'
+!!  WRITE (*, *) 'outputted'
+!!  WRITE (*, *) 'outputted'
+!!  WRITE (*, *) 'outputted'
+!!  WRITE (*, *) 'outputted'
+!!!  WRITE (*, *) 'time summing'
+!!!  WRITE (*, *) 'time summing'
+!!!  WRITE (*, *) 'time summing'
+!!!  WRITE (*, *) 'time summing'
   IF ( iproc == root ) CALL time_summ
-!  WRITE (*, *) 'time summed'
+!!!  WRITE (*, *) 'time summed'
+!!!  WRITE (*, *) 'time summed'
+!!!  WRITE (*, *) 'time summed'
+!!!  WRITE (*, *) 'time summed'
 !_______________________________________________________________________
 !
 ! Final cleanup: deallocate, close output file, end the program
 !_______________________________________________________________________
 
-    WRITE (*, *) 'deallocating input'
+!!    WRITE (*, *) 'deallocating input'
+!!    WRITE (*, *) 'deallocating input'
+!!    WRITE (*, *) 'deallocating input'
+!!    WRITE (*, *) 'deallocating input'
   CALL dealloc_input ( 3 )
-    WRITE (*, *) 'deallocating solve'
+!!    WRITE (*, *) 'deallocating solve'
+!!    WRITE (*, *) 'deallocating solve'
+!!    WRITE (*, *) 'deallocating solve'
+!!    WRITE (*, *) 'deallocating solve'
   CALL dealloc_solve ( 3 )
-  WRITE (*, *) 'wtiming'
+!!  WRITE (*, *) 'wtiming'
+!!  WRITE (*, *) 'wtiming'
+!!  WRITE (*, *) 'wtiming'
+!!  WRITE (*, *) 'wtiming'
   CALL wtime ( t5 )
-  WRITE (*, *) 'wtimed'
+!!  WRITE (*, *) 'wtimed'
+!!  WRITE (*, *) 'wtimed'
+!!  WRITE (*, *) 'wtimed'
+!!  WRITE (*, *) 'wtimed'
   tsnap = t5 - t1
 
-  WRITE (*, *) 'writing the snap data'
+!!  WRITE (*, *) 'writing the snap data'
+!!  WRITE (*, *) 'writing the snap data'
+!!  WRITE (*, *) 'writing the snap data'
+!!  WRITE (*, *) 'writing the snap data'
   IF ( iproc == root ) THEN
     WRITE( ounit, 501 ) tsnap
     WRITE( ounit, 502 ) tgrind, ( star, i = 1, 80 )
   END IF
 
-  WRITE (*, *) 'finalizing'
+!!  WRITE (*, *) 'finalizing'
+!!  WRITE (*, *) 'finalizing'
+!!  WRITE (*, *) 'finalizing'
+!!  WRITE (*, *) 'finalizing'
   CALL finalize
-  WRITE (*, *) 'finalized'
-  WRITE (*, *) 'closing file'
+!!  WRITE (*, *) 'finalized'
+!!  WRITE (*, *) 'finalized'
+!!  WRITE (*, *) 'finalized'
+!!  WRITE (*, *) 'finalized'
+!!  WRITE (*, *) 'closing file'
+!!  WRITE (*, *) 'closing file'
+!!  WRITE (*, *) 'closing file'
+!!  WRITE (*, *) 'closing file'
   !CALL close_file ( ounit, ierr, error )
-  WRITE (*, *) 'closed file'
+!!  WRITE (*, *) 'closed file'
+!!  WRITE (*, *) 'closed file'
+!!  WRITE (*, *) 'closed file'
+!!  WRITE (*, *) 'closed file'
   CALL bcast ( ierr, comm_snap, root )
   IF ( ierr /= 0 ) THEN
     CALL print_error ( 0, error )
-    WRITE (*,*) 'third bcast error!'
+!!    WRITE (*,*) 'third bcast error!'
+!!    WRITE (*,*) 'third bcast error!'
+!!    WRITE (*,*) 'third bcast error!'
+!!    WRITE (*,*) 'third bcast error!'
     CALL stop_run ( 0, 0, 0 )
   END IF
 
-  WRITE (*, *) 'otrdone'
+!!  WRITE (*, *) 'otrdone'
+!!  WRITE (*, *) 'otrdone'
+!!  WRITE (*, *) 'otrdone'
+!!  WRITE (*, *) 'otrdone'
   IF ( otrdone ) THEN
-      WRITE (*, *) 'otrdone 1 error'
+!!      WRITE (*, *) 'otrdone 1 error'
+!!      WRITE (*, *) 'otrdone 1 error'
+!!      WRITE (*, *) 'otrdone 1 error'
+!!      WRITE (*, *) 'otrdone 1 error'
     CALL stop_run ( 0, 0, 1 )
 ELSE
-    WRITE (*,*) 'otrdone 2 error'
+!!    WRITE (*,*) 'otrdone 2 error'
+!!    WRITE (*,*) 'otrdone 2 error'
+!!    WRITE (*,*) 'otrdone 2 error'
+!!    WRITE (*,*) 'otrdone 2 error'
     CALL stop_run ( 0, 0, 2 )
   END IF
 !_______________________________________________________________________

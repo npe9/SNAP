@@ -69,33 +69,60 @@ MODULE input_module
     ierr = 0
 
     IF ( iproc == root ) READ( iunit, NML=invar, IOSTAT=ierr )
-    !WRITE (*, *) "ierr ", ierr," after read of iunit ", iunit, " with invar "
+!!    !WRITE (*, *) "ierr ", ierr," after read of iunit ", iunit, " with invar "
+!!    !WRITE (*, *) "ierr ", ierr," after read of iunit ", iunit, " with invar "
+!!    !WRITE (*, *) "ierr ", ierr," after read of iunit ", iunit, " with invar "
+!!    !WRITE (*, *) "ierr ", ierr," after read of iunit ", iunit, " with invar "
     CALL bcast ( ierr, comm_snap, root )
-    !WRITE (*, *) "ierr ", ierr," after bcast with comm_snap ", comm_snap, " with root ", root
+!!    !WRITE (*, *) "ierr ", ierr," after bcast with comm_snap ", comm_snap, " with root ", root
+!!    !WRITE (*, *) "ierr ", ierr," after bcast with comm_snap ", comm_snap, " with root ", root
+!!    !WRITE (*, *) "ierr ", ierr," after bcast with comm_snap ", comm_snap, " with root ", root
+!!    !WRITE (*, *) "ierr ", ierr," after bcast with comm_snap ", comm_snap, " with root ", root
     IF ( ierr /= 0 ) THEN
       error = '***ERROR: READ_INPUT: Problem reading input file'
       CALL print_error ( 0, error )
       CALL print_error ( ounit, error )
-      !WRITE (*, *) 'couldnt read input'
+!!      !WRITE (*, *) 'couldnt read input'
+!!      !WRITE (*, *) 'couldnt read input'
+!!      !WRITE (*, *) 'couldnt read input'
+!!      !WRITE (*, *) 'couldnt read input'
       CALL stop_run ( 0, 0, 0 )
     END IF
 
-    !WRITE (*, *) 'checking iproc ', iproc, ' is same to root ', root
+!!    !WRITE (*, *) 'checking iproc ', iproc, ' is same to root ', root
+!!    !WRITE (*, *) 'checking iproc ', iproc, ' is same to root ', root
+!!    !WRITE (*, *) 'checking iproc ', iproc, ' is same to root ', root
+!!    !WRITE (*, *) 'checking iproc ', iproc, ' is same to root ', root
     IF ( iproc == root ) THEN
-       ! WRITE (*, *) 'iproc is root'
+!!       ! WRITE (*, *) 'iproc is root'
+!!       ! WRITE (*, *) 'iproc is root'
+!!       ! WRITE (*, *) 'iproc is root'
+!!       ! WRITE (*, *) 'iproc is root'
       CALL input_echo
       CALL input_check ( ierr )
-      !WRITE (*,*) 'input_check ierr ', ierr
+!!      !WRITE (*,*) 'input_check ierr ', ierr
+!!      !WRITE (*,*) 'input_check ierr ', ierr
+!!      !WRITE (*,*) 'input_check ierr ', ierr
+!!      !WRITE (*,*) 'input_check ierr ', ierr
     END IF
 
-    !WRITE (*, *) 'bcasting with ierr ', ierr
+!!    !WRITE (*, *) 'bcasting with ierr ', ierr
+!!    !WRITE (*, *) 'bcasting with ierr ', ierr
+!!    !WRITE (*, *) 'bcasting with ierr ', ierr
+!!    !WRITE (*, *) 'bcasting with ierr ', ierr
     CALL bcast ( ierr, comm_snap, root )
 
-    !WRITE (*, *) "ierr ", ierr," after second bcast with comm_snap ", comm_snap, " with root ", root
+!!    !WRITE (*, *) "ierr ", ierr," after second bcast with comm_snap ", comm_snap, " with root ", root
+!!    !WRITE (*, *) "ierr ", ierr," after second bcast with comm_snap ", comm_snap, " with root ", root
+!!    !WRITE (*, *) "ierr ", ierr," after second bcast with comm_snap ", comm_snap, " with root ", root
+!!    !WRITE (*, *) "ierr ", ierr," after second bcast with comm_snap ", comm_snap, " with root ", root
     IF ( ierr /= 0 ) THEN
       error = '***ERROR: READ_INPUT: Input file errors'
       CALL print_error ( ounit, error )
-      !WRITE (*, *) 'input file error'
+!!      !WRITE (*, *) 'input file error'
+!!      !WRITE (*, *) 'input file error'
+!!      !WRITE (*, *) 'input file error'
+!!      !WRITE (*, *) 'input file error'
       CALL stop_run ( 0, 0, 0 )
     END IF
 !_______________________________________________________________________
@@ -213,65 +240,110 @@ MODULE input_module
 !   Parallel processing inputs.
 !_______________________________________________________________________
 
-    !WRITE (* , *) 'npey ', npey
+!!    !WRITE (* , *) 'npey ', npey
+!!    !WRITE (* , *) 'npey ', npey
+!!    !WRITE (* , *) 'npey ', npey
+!!    !WRITE (* , *) 'npey ', npey
     IF ( npey < 1 ) THEN
       ierr = ierr + 1
-      !WRITE (*, *) 'npey not positive'
+!!      !WRITE (*, *) 'npey not positive'
+!!      !WRITE (*, *) 'npey not positive'
+!!      !WRITE (*, *) 'npey not positive'
+!!      !WRITE (*, *) 'npey not positive'
       error = '***ERROR: INPUT_CHECK: NPEY must be positive'
       CALL print_error ( ounit, error )
     END IF
 
-    !WRITE (*, *) 'npez ', npez
+!!    !WRITE (*, *) 'npez ', npez
+!!    !WRITE (*, *) 'npez ', npez
+!!    !WRITE (*, *) 'npez ', npez
+!!    !WRITE (*, *) 'npez ', npez
     IF ( npez < 1 ) THEN
       ierr = ierr + 1
-      !WRITE (*, *) 'npez not positive'
+!!      !WRITE (*, *) 'npez not positive'
+!!      !WRITE (*, *) 'npez not positive'
+!!      !WRITE (*, *) 'npez not positive'
+!!      !WRITE (*, *) 'npez not positive'
       error = '***ERROR: INPUT_CHECK: NPEZ must be positive'
       CALL print_error ( ounit, error )
     END IF
 
-    !WRITE (*, *) 'ndimen ', ndimen, 'mod ny npey ', MOD( ny, npey )/=0
+!!    !WRITE (*, *) 'ndimen ', ndimen, 'mod ny npey ', MOD( ny, npey )/=0
+!!    !WRITE (*, *) 'ndimen ', ndimen, 'mod ny npey ', MOD( ny, npey )/=0
+!!    !WRITE (*, *) 'ndimen ', ndimen, 'mod ny npey ', MOD( ny, npey )/=0
+!!    !WRITE (*, *) 'ndimen ', ndimen, 'mod ny npey ', MOD( ny, npey )/=0
     IF ( ndimen>1 .AND. MOD( ny, npey )/=0 ) THEN
       ierr = ierr + 1
-      !WRITE (*, *) 'npey doesnt divide envenly into ny'
+!!      !WRITE (*, *) 'npey doesnt divide envenly into ny'
+!!      !WRITE (*, *) 'npey doesnt divide envenly into ny'
+!!      !WRITE (*, *) 'npey doesnt divide envenly into ny'
+!!      !WRITE (*, *) 'npey doesnt divide envenly into ny'
       error = '***ERROR: INPUT_CHECK: NPEY must divide evenly into NY'
       CALL print_error ( ounit, error )
     END IF
 
-    !WRITE (*, *) 'ndimen ', ndimen, 'mod ny npez ', MOD( nz, npez )/=0
+!!    !WRITE (*, *) 'ndimen ', ndimen, 'mod ny npez ', MOD( nz, npez )/=0
+!!    !WRITE (*, *) 'ndimen ', ndimen, 'mod ny npez ', MOD( nz, npez )/=0
+!!    !WRITE (*, *) 'ndimen ', ndimen, 'mod ny npez ', MOD( nz, npez )/=0
+!!    !WRITE (*, *) 'ndimen ', ndimen, 'mod ny npez ', MOD( nz, npez )/=0
     IF ( ndimen>2 .AND. MOD( nz, npez )/=0 ) THEN
       ierr = ierr + 1
       error = '***ERROR: INPUT_CHECK: NPEZ must divide evenly into NZ'
       CALL print_error ( ounit, error )
     END IF
 
-    !WRITE (*, *) 'ndimen ', ndimen, ' npey/=1 ', npey/=1
+!!    !WRITE (*, *) 'ndimen ', ndimen, ' npey/=1 ', npey/=1
+!!    !WRITE (*, *) 'ndimen ', ndimen, ' npey/=1 ', npey/=1
+!!    !WRITE (*, *) 'ndimen ', ndimen, ' npey/=1 ', npey/=1
+!!    !WRITE (*, *) 'ndimen ', ndimen, ' npey/=1 ', npey/=1
     IF ( ndimen<2 .AND. npey/=1 ) THEN
       ierr = ierr + 1
-      !WRITE (*,*) 'npey must be 1 if not 2d'
+!!      !WRITE (*,*) 'npey must be 1 if not 2d'
+!!      !WRITE (*,*) 'npey must be 1 if not 2d'
+!!      !WRITE (*,*) 'npey must be 1 if not 2d'
+!!      !WRITE (*,*) 'npey must be 1 if not 2d'
       error = '***ERROR: INPUT_CHECK: NPEY must be 1 if not 2-D problem'
       CALL print_error ( ounit, error )
     END IF
 
-    !WRITE (*, *) 'ndimen ', ndimen, ' npez/=1 ', npez/=1
+!!    !WRITE (*, *) 'ndimen ', ndimen, ' npez/=1 ', npez/=1
+!!    !WRITE (*, *) 'ndimen ', ndimen, ' npez/=1 ', npez/=1
+!!    !WRITE (*, *) 'ndimen ', ndimen, ' npez/=1 ', npez/=1
+!!    !WRITE (*, *) 'ndimen ', ndimen, ' npez/=1 ', npez/=1
     IF ( ndimen<3 .AND. npez/=1 ) THEN
       ierr = ierr + 1
-      !WRITE (*, *) 'npez has to be 1 if not 3d'
+!!      !WRITE (*, *) 'npez has to be 1 if not 3d'
+!!      !WRITE (*, *) 'npez has to be 1 if not 3d'
+!!      !WRITE (*, *) 'npez has to be 1 if not 3d'
+!!      !WRITE (*, *) 'npez has to be 1 if not 3d'
       error = '***ERROR: INPUT_CHECK: NPEZ must be 1 if not 3-D problem'
       CALL print_error ( ounit, error )
     END IF
 
-    !WRITE (*,*) 'npey ', npey, ' npez ', npez, ' nproc ', nproc, 'npey*npez /= nproc', npey*npez /= nproc
+!!    !WRITE (*,*) 'npey ', npey, ' npez ', npez, ' nproc ', nproc, 'npey*npez /= nproc', npey*npez /= nproc
+!!    !WRITE (*,*) 'npey ', npey, ' npez ', npez, ' nproc ', nproc, 'npey*npez /= nproc', npey*npez /= nproc
+!!    !WRITE (*,*) 'npey ', npey, ' npez ', npez, ' nproc ', nproc, 'npey*npez /= nproc', npey*npez /= nproc
+!!    !WRITE (*,*) 'npey ', npey, ' npez ', npez, ' nproc ', nproc, 'npey*npez /= nproc', npey*npez /= nproc
     IF ( npey*npez /= nproc ) THEN
       ierr = ierr + 1
-      !WRITE (*,*) 'npey*npez not equal mpi nproc'
+!!      !WRITE (*,*) 'npey*npez not equal mpi nproc'
+!!      !WRITE (*,*) 'npey*npez not equal mpi nproc'
+!!      !WRITE (*,*) 'npey*npez not equal mpi nproc'
+!!      !WRITE (*,*) 'npey*npez not equal mpi nproc'
       error = '***ERROR: INPUT_CHECK: NPEY*NPEZ must equal MPI NPROC'
       CALL print_error ( ounit, error )
     END IF
 
-    !WRITE (*,*) 'ichunk ', ichunk, ' nx ', nx, ' ichunk > nx ', ichunk > nx
+!!    !WRITE (*,*) 'ichunk ', ichunk, ' nx ', nx, ' ichunk > nx ', ichunk > nx
+!!    !WRITE (*,*) 'ichunk ', ichunk, ' nx ', nx, ' ichunk > nx ', ichunk > nx
+!!    !WRITE (*,*) 'ichunk ', ichunk, ' nx ', nx, ' ichunk > nx ', ichunk > nx
+!!    !WRITE (*,*) 'ichunk ', ichunk, ' nx ', nx, ' ichunk > nx ', ichunk > nx
     IF ( ichunk > nx ) THEN
       ichunk = nx
-      !WRITE (*, *) 'ichunk exceeding nx'
+!!      !WRITE (*, *) 'ichunk exceeding nx'
+!!      !WRITE (*, *) 'ichunk exceeding nx'
+!!      !WRITE (*, *) 'ichunk exceeding nx'
+!!      !WRITE (*, *) 'ichunk exceeding nx'
       error = '*WARNING: INPUT_CHECK: ICHUNK cannot exceed NX; ' //    &
               'reset to NX'
       CALL print_error ( ounit, error )
@@ -281,14 +353,20 @@ MODULE input_module
 
     IF ( MOD( nx, ichunk ) /= 0 ) THEN
       ierr = ierr + 1
-      !WRITE (*, *) 'ichunk must divide evenly'
+!!      !WRITE (*, *) 'ichunk must divide evenly'
+!!      !WRITE (*, *) 'ichunk must divide evenly'
+!!      !WRITE (*, *) 'ichunk must divide evenly'
+!!      !WRITE (*, *) 'ichunk must divide evenly'
       error = '***ERROR: INPUT_CHECK: ICHUNK must divide evenly into NX'
       CALL print_error ( ounit, error )
     END IF
 
     IF ( nthreads < 1 ) THEN
       nthreads = 1
-      !WRITE (*, *) 'nthreads must be positive'
+!!      !WRITE (*, *) 'nthreads must be positive'
+!!      !WRITE (*, *) 'nthreads must be positive'
+!!      !WRITE (*, *) 'nthreads must be positive'
+!!      !WRITE (*, *) 'nthreads must be positive'
       error = '*WARNING: INPUT_CHECK: NTHREADS must be positive; ' //  &
               'reset to 1'
       CALL print_error ( ounit, error )
@@ -296,7 +374,10 @@ MODULE input_module
 
     IF ( nnested < 0 ) THEN
       nnested = 0
-      !WRITE (*, *) 'nnested must be nonnegative'
+!!      !WRITE (*, *) 'nnested must be nonnegative'
+!!      !WRITE (*, *) 'nnested must be nonnegative'
+!!      !WRITE (*, *) 'nnested must be nonnegative'
+!!      !WRITE (*, *) 'nnested must be nonnegative'
       error = '*WARNING: INPUT_CHECK: NNESTED must be ' //             &
               'non-negative; reset to 0'
       CALL print_error ( ounit, error )
@@ -304,7 +385,10 @@ MODULE input_module
 
     IF ( nnested == 1 ) THEN
       nnested = 0
-      !WRITE (*, *) ' nnested has to be same as 0+overhead'
+!!      !WRITE (*, *) ' nnested has to be same as 0+overhead'
+!!      !WRITE (*, *) ' nnested has to be same as 0+overhead'
+!!      !WRITE (*, *) ' nnested has to be same as 0+overhead'
+!!      !WRITE (*, *) ' nnested has to be same as 0+overhead'
       error = '*WARNING: INPUT_CHECK: NNESTED=1 same as 0+overhead;' //&
               ' reset to 0'
       CALL print_error ( ounit, error )
@@ -316,49 +400,70 @@ MODULE input_module
 
     IF ( ndimen<1 .OR. ndimen>3 ) THEN
       ierr = ierr + 1
-      !WRITE (*, *) 'ndimen must be 1 2 or 3'
+!!      !WRITE (*, *) 'ndimen must be 1 2 or 3'
+!!      !WRITE (*, *) 'ndimen must be 1 2 or 3'
+!!      !WRITE (*, *) 'ndimen must be 1 2 or 3'
+!!      !WRITE (*, *) 'ndimen must be 1 2 or 3'
       error = '***ERROR: INPUT_CHECK: NDIMEN must be 1, 2, or 3'
       CALL print_error ( ounit, error )
     END IF
 
     IF ( nx < 4 ) THEN
       ierr = ierr + 1
-      !WRITE (*, *) 'nx must be 4 or greater'
+!!      !WRITE (*, *) 'nx must be 4 or greater'
+!!      !WRITE (*, *) 'nx must be 4 or greater'
+!!      !WRITE (*, *) 'nx must be 4 or greater'
+!!      !WRITE (*, *) 'nx must be 4 or greater'
       error = '***ERROR: INPUT_CHECK: NX must be at least 4'
       CALL print_error ( ounit, error )
     END IF
 
     IF ( ny<4 .AND. ndimen>1 ) THEN
       ierr = ierr + 1
-      !WRITE (*, *) 'ny must be at least 4'
+!!      !WRITE (*, *) 'ny must be at least 4'
+!!      !WRITE (*, *) 'ny must be at least 4'
+!!      !WRITE (*, *) 'ny must be at least 4'
+!!      !WRITE (*, *) 'ny must be at least 4'
       error = '***ERROR: INPUT_CHECK: NY must be at least 4'
       CALL print_error ( ounit, error )
     END IF
 
     IF ( nz<4 .AND. ndimen>2 ) THEN
       ierr = ierr + 1
-      !WRITE (*,*) 'nz must be at least 4'
+!!      !WRITE (*,*) 'nz must be at least 4'
+!!      !WRITE (*,*) 'nz must be at least 4'
+!!      !WRITE (*,*) 'nz must be at least 4'
+!!      !WRITE (*,*) 'nz must be at least 4'
       error = '***ERROR: INPUT_CHECK: NZ must be at least 4'
       CALL print_error ( ounit, error )
     END IF
 
     IF ( lx <= zero ) THEN
       ierr = ierr + 1
-      !WRITE (*, *) 'lx must be positive'
+!!      !WRITE (*, *) 'lx must be positive'
+!!      !WRITE (*, *) 'lx must be positive'
+!!      !WRITE (*, *) 'lx must be positive'
+!!      !WRITE (*, *) 'lx must be positive'
       error = '***ERROR: INPUT_CHECK: LX must be positive'
       CALL print_error ( ounit, error )
     END IF
 
     IF ( ly <= zero ) THEN
       ierr = ierr + 1
-      !WRITE (*, *) 'ly must be positive'
+!!      !WRITE (*, *) 'ly must be positive'
+!!      !WRITE (*, *) 'ly must be positive'
+!!      !WRITE (*, *) 'ly must be positive'
+!!      !WRITE (*, *) 'ly must be positive'
       error = '***ERROR: INPUT_CHECK: LY must be positive'
       CALL print_error ( ounit, error )
     END IF
 
     IF ( lz <= zero ) THEN
       ierr = ierr + 1
-      !WRITE (*, *) 'lz must be positive'
+!!      !WRITE (*, *) 'lz must be positive'
+!!      !WRITE (*, *) 'lz must be positive'
+!!      !WRITE (*, *) 'lz must be positive'
+!!      !WRITE (*, *) 'lz must be positive'
       error = '***ERROR: INPUT_CHECK: LZ must be positive'
       CALL print_error ( ounit, error )
     END IF
@@ -366,7 +471,10 @@ MODULE input_module
     IF ( ndimen<2 .AND. ( ny>1 .OR. ly/=one ) ) THEN
       ny = 1
       ly = zero
-      !WRITE (*, *) 'ny and ly reset for 1d'
+!!      !WRITE (*, *) 'ny and ly reset for 1d'
+!!      !WRITE (*, *) 'ny and ly reset for 1d'
+!!      !WRITE (*, *) 'ny and ly reset for 1d'
+!!      !WRITE (*, *) 'ny and ly reset for 1d'
       error = '*WARNING: INPUT_CHECK: NY and LY reset for 1-D problem'
       CALL print_error ( ounit, error )
     END IF
@@ -374,7 +482,10 @@ MODULE input_module
     IF ( ndimen<3 .AND. ( nz>1 .OR. lz/=one ) ) THEN
       nz = 1
       lz = zero
-      !WRITE (*, *) 'nz and lz reset for 1/2d'
+!!      !WRITE (*, *) 'nz and lz reset for 1/2d'
+!!      !WRITE (*, *) 'nz and lz reset for 1/2d'
+!!      !WRITE (*, *) 'nz and lz reset for 1/2d'
+!!      !WRITE (*, *) 'nz and lz reset for 1/2d'
       error = '*WARNING: INPUT_CHECK: NZ and LZ reset for 1/2-D problem'
       CALL print_error ( ounit, error )
     END IF

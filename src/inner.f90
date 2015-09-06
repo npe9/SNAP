@@ -89,16 +89,20 @@ MODULE inner_module
 !_______________________________________________________________________
 
     CALL wtime ( t3 )
-
+!    write (*, *) 'calling sweep'
+!    write (*, *) 'calling sweep'
     CALL sweep
-
+!    write (*, *) 'called sweep'
+!    write (*, *) 'called sweep'
     CALL wtime ( t4 )
     tsweeps = tsweeps + t4 - t3
-
+!    write (*, *) 'calling inr_conv'
+!    write (*, *) 'calling inr_conv'
     CALL inr_conv ( inno, iits )
 !_______________________________________________________________________
 !_______________________________________________________________________
-
+!    write (*, *) 'ending inner'
+!    write (*, *) 'ending inner'
   END SUBROUTINE inner
 
 
@@ -120,7 +124,8 @@ MODULE inner_module
 !   Compute the within-group scattering source. Thread over groups.
 !_______________________________________________________________________
 
-    write (*,*) 'inr_src: before scatter flux:', flux
+!    write (*,*) 'inr_src: before scatter flux:', flux
+!    write (*,*) 'inr_src: before scatter flux:', flux
   !$OMP PARALLEL DO SCHEDULE(DYNAMIC,1) DEFAULT(SHARED) PRIVATE(g)
     DO g = 1, ng
       IF ( inrdone(g) ) CYCLE
@@ -128,7 +133,8 @@ MODULE inner_module
         flux(:,:,:,g), fluxm(:,:,:,:,g), qtot(:,:,:,:,g) )
     END DO
     !$OMP END PARALLEL DO
-    write (*,*) 'inr_src: within group flux:', flux
+!    write (*,*) 'inr_src: within group flux:', flux
+!    write (*,*) 'inr_src: within group flux:', flux
 !_______________________________________________________________________
 !_______________________________________________________________________
 

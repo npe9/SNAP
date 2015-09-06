@@ -52,22 +52,35 @@ CONTAINS
 
     cs = zero
     call mcheck()
-   ! write (*,*) 'expsing cs size: ', SIZE(cs), 'xs size: ', SIZE(xs)
-  !  write (*, *) 'nz: ', nz, ' ny: ', ny, ' nx: ', nx
+!    write (*,*) 'expsing cs size: ', SIZE(cs), 'xs size: ', SIZE(xs)
+!    write (*,*) 'expsing cs size: ', SIZE(cs), 'xs size: ', SIZE(xs)
+!   write (*, *) 'nz: ', nz, ' ny: ', ny, ' nx: ', nx
+!   write (*, *) 'nz: ', nz, ' ny: ', ny, ' nx: ', nx
     DO k = 1, nz
        DO j = 1, ny
           DO i = 1, nx
-             !            write (*,*) 'xs',i,j,k
+!                         write (*,*) 'xs',i,j,k
+!                         write (*,*) 'xs',i,j,k
              call mcheck()
-             !write (*,*) "i ", i, " j ",j, " k ",k
-             !write (*,*) "map(i,j,k) ", map(i,j,k)
-             !write (*,*) "xs(map(i,j,k)) ", xs(map(i,j,k))
-             !write (*,*) "cs(i,j,k) ", cs(i,j,k)
+!             write (*,*) "i ", i, " j ",j, " k ",k
+!             write (*,*) "i ", i, " j ",j, " k ",k
+!             write (*,*) "map(i,j,k) ", map(i,j,k)
+!             write (*,*) "map(i,j,k) ", map(i,j,k)
+!             write (*,*) "xs(map(i,j,k)) ", xs(map(i,j,k))
+!             write (*,*) "xs(map(i,j,k)) ", xs(map(i,j,k))
+!             write (*,*) "cs(i,j,k) ", cs(i,j,k)
+!             write (*,*) "cs(i,j,k) ", cs(i,j,k)
              cs(i,j,k) = xs(map(i,j,k))
              !call blowup()
           END DO
+!          write (*,*) 'exps_reg: ending inntermost'
+!          write (*,*) 'exps_reg: ending inntermost'
        END DO
+!       write (*,*) 'exps_reg: ending inner'
+!       write (*,*) 'exps_reg: ending inner'
     END DO
+!    write (*,*) 'exps_reg: ending exps_reg'
+!    write (*,*) 'exps_reg: ending exps_reg'
     !_______________________________________________________________________
     !_______________________________________________________________________
 
