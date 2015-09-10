@@ -102,17 +102,13 @@ PROGRAM snap_main
   call mmap_off()
   ierr = 0
   error = ' '
-!!  WRITE (*,*) 'piniting'
-!!  WRITE (*,*) 'piniting'
-!!  WRITE (*,*) 'piniting'
-!!  WRITE (*,*) 'piniting'
   CALL pinit ( t1 )
 
-!!  WRITE (*,*) 'wtiming'
-!!  WRITE (*,*) 'wtiming'
-!!  WRITE (*,*) 'wtiming'
-!!  WRITE (*,*) 'wtiming'
   CALL wtime ( t2 )
+  write (*, *) 'successfully wtimed'
+  write (*, *) 'tparset ',tparset
+  write (*, *) 't2 ', t2
+  write (*, *) 't1 ', t1
   tparset = tparset + t2 - t1
 !_______________________________________________________________________
 !
@@ -121,52 +117,24 @@ PROGRAM snap_main
 !_______________________________________________________________________
 
 
-!!  WRITE (*,*) 'cmdarging'
-!!  WRITE (*,*) 'cmdarging'
-!!  WRITE (*,*) 'cmdarging'
-!!  WRITE (*,*) 'cmdarging'
   CALL cmdarg ( ierr, error )
-!!  WRITE (*,*) 'share_initing'
-!!  WRITE (*,*) 'share_initing'
-!!  WRITE (*,*) 'share_initing'
-!!  WRITE (*,*) 'share_initing'
+
   CALL share_init( iproc, segment )
-!!  WRITE (*,*) 'bcasting'
-!!  WRITE (*,*) 'bcasting'
-!!  WRITE (*,*) 'bcasting'
-!!  WRITE (*,*) 'bcasting'
+
   CALL bcast ( ierr, comm_snap, root )
-!!  WRITE (*,*) 'ierr checking'
-!!  WRITE (*,*) 'ierr checking'
-!!  WRITE (*,*) 'ierr checking'
-!!  WRITE (*,*) 'ierr checking'
   IF ( ierr /= 0 ) THEN
     CALL print_error ( 0, error )
     CALL stop_run ( 0, 0, 0, 0 )
   END IF
-! so how do we change this?
-! can do I have to do it this way?
-! wait, is it dong some magic with mpi?
-!!  WRITE (*,*) 'checking stdin'
-!!  WRITE (*,*) 'checking stdin'
-!!  WRITE (*,*) 'checking stdin'
-!!  WRITE (*,*) 'checking stdin'
+ 
   IF (ifile == 'stdin') THEN
     iunit = 5
   ELSE
     CALL open_file ( iunit, ifile, 'OLD', 'READ', ierr, error )
   END IF
 
-!!  WRITE (*,*) 'bcasting'
-!!  WRITE (*,*) 'bcasting'
-!!  WRITE (*,*) 'bcasting'
-!!  WRITE (*,*) 'bcasting'
   CALL bcast ( ierr, comm_snap, root )
   IF ( ierr /= 0 ) THEN
-!!      WRITE (*, *) 'bcast error'
-!!      WRITE (*, *) 'bcast error'
-!!      WRITE (*, *) 'bcast error'
-!!      WRITE (*, *) 'bcast error'
     CALL print_error ( 0, error )
     CALL stop_run ( 0, 0, 0, 0 )
   END IF

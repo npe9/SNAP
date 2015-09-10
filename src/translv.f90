@@ -7,8 +7,8 @@ SUBROUTINE translv
 !
   !!  write (*,*) 'got past 208'
   !  write (*,*) 'got past 208'
-209 FORMAT( /, 2X, '***UNCONVERGED*** Stopping Iterations!!', /, 2X, &
------------------------------------------------------------------------
+!209 FORMAT( /, 2X, '***UNCONVERGED*** Stopping Iterations!!', /, 2X!, !&
+!-----------------------------------------------------------------------
 
   USE global_module, ONLY: i_knd, r_knd, ounit, zero, half, one, two
 
@@ -210,7 +210,7 @@ SUBROUTINE translv
     cy_iits = 0
 
     IF ( iproc==root .AND. it_det==0 ) THEN
-      WRITE( *, 203 )
+      !WRITE( *, 203 )
       WRITE( ounit, 203 )
     END IF
 
@@ -223,7 +223,7 @@ SUBROUTINE translv
     outer_loop: DO otno = 1, oitm
 
       IF ( iproc==root .AND. it_det==1 ) THEN
-        WRITE( *, 204 )     ( star, i = 1, 20 ), otno
+        !WRITE( *, 204 )     ( star, i = 1, 20 ), otno
         WRITE( ounit, 204 ) ( star, i = 1, 20 ), otno
       END IF
 !_______________________________________________________________________
@@ -237,7 +237,7 @@ SUBROUTINE translv
       cy_iits = cy_iits + out_iits
 
       IF ( iproc == root ) THEN
-        WRITE( *, 205 )     otno, dfmxo, out_iits
+        !WRITE( *, 205 )     otno, dfmxo, out_iits
         WRITE( ounit, 205 ) otno, dfmxo, out_iits
       END IF
 

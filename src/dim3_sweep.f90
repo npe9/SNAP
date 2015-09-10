@@ -422,29 +422,6 @@ CONTAINS
 !_______________________________________________________________________
 !_______________________________________________________________________
 
-          IF ( ((kd==1 .AND. firstz) .OR. (kd==2 .AND. lastz)) .AND.     &
-               ndimen==3 ) THEN
-             flkz(i,j,k+kd-1) = flkz(i,j,k+kd-1) +                        &
-                  kst*SUM( wxi*psik(:,ic,j) )
-          END IF
-          !_______________________________________________________________________
-          !
-          !       Finish the loops
-          !_______________________________________________________________________
-!          write (*,*) 'finish loops'
-!          write (*,*) 'finish loops'
-
-       END DO line_loop
-       !$OMP END DO
-!       write (*,*) 'ending diagonal_loop'
-!       write (*,*) 'ending diagonal_loop'
-    END DO diagonal_loop
-
-    !$OMP END PARALLEL
-    !_______________________________________________________________________
-    !_______________________________________________________________________
-!    write (*,*) 'ending dim3_sweep'
-!    write (*,*) 'ending dim3_sweep'
   END SUBROUTINE dim3_sweep
 
 

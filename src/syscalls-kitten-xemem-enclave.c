@@ -53,8 +53,8 @@ xemem_segid_t seg, seg1;
 xemem_apid_t apid;
 
 // Returns the current time in seconds, as a double
-double
-now_(double *time)
+static double
+now_(struct double *time)
 {
 	struct timeval tv;
 	gettimeofday(&tv, NULL);
@@ -210,7 +210,7 @@ int setup1_(int *nx, int *ny, int *nz, int *ng, char *segment) {
 	cte->n[2] = *nz;
 	cte->n[3] = *ng;
 	printf("*nx %d *ny %d *nz %d *ng %d\n", *nx, *ny, *nz, *ng);
-	cte->filesize = (*ng)*8 + (*nx)*(*ny)*(*nz)*(*ng)*8;
+	cte->filesize = (*nx)*(*ny)*(*nz)*(*ng);
 	// this is now wrong.
 	// XXX: just to find out why it's walking off the end of the buffer.
 	//cte->filesize = 4096*32;
@@ -295,30 +295,12 @@ int share_init_(int *iproc, char *segment) {
 	cte->filesize = 0;
 	cte->niter = 0;
 	// cte->id = arena_map_backed_region(cte->id,
-	id_t my_aspace;
 	int pagesz = 4096;
 	int nbacking = 4;
 	int npages = 1;
-	struct pmem_region rgn;
-	vaddr_t	region;
 	//rgn.start = 0;
-	aspace_get_myid(&my_aspace);
-	kernel_set(CTL_PMEM, (void*)1, 0);
-	if((status = pmem_alloc_umem(8*VM_PAGE_4KB, VM_PAGE_4KB, &rgn))){
-		printf("couldn't alloc umem! status %d\n", status);
-		exit(-1);
-		return -1;
-	}
-	aspace_get_myid(&my_aspace);
-	status = arena_map_backed_region_anywhere(my_aspace, &region,
-						  npages*pagesz, nbacking*pagesz, VM_USER, BK_ARENA,
-						  pagesz, "cow-region", rgn.start);
-	if(status != 0){
-		printf("arena mapping failed %d\n", status);
-		return -1;
-	}
-	ptr = rgn.start;
 
+	//ptr = (8*4096);
 
 	return 1;
 }
@@ -359,13 +341,6 @@ int publish_(int *tint) {
 	xemem_segid_t seg;
 
 	cte->time_loop  = *tint;
-	// TODO find id
-	//printf("publishing *tint %d\n", *tint);
-	// so where does my id come from?
-	// put it
-	status = aspace_copy(cte->id, &dst, 0);
-	// who deletes this?
-	//printf("publish: waiting for mine\n");
 	cte->niter++;
 	cte->segid = xemem_make(ptr, PAGE_ROUND_UP(cte->filesize)*128, cte->sharename);
 	if(cte->segid <= 0){
@@ -407,10 +382,6 @@ int finalize_()
 {
 	cte->finalized = 1;
 	return 1;
-}
-
-int aspace_copy_(int my_id, id_t dest) {
-	return aspace_copy(my_id, &dest, 0);
 }
 
 int create_shared_() {

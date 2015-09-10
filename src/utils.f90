@@ -9,61 +9,40 @@
 
 MODULE utils_module
 
-    USE global_module, ONLY: i_knd, ifile, ofile, segment
+  USE global_module, ONLY: i_knd, ifile, ofile, segment
 
-    USE dealloc_module
-
-    USE plib_module, ONLY: iproc, root, pend
-
-    IMPLICIT NONE
-
-    PUBLIC
-
+  USE dealloc_module
 
   USE plib_module, ONLY: iproc, root, pend, plock_omp, nthreads
 
   USE control_module, ONLY: swp_typ
 
-        CHARACTER(LEN=64), INTENT(OUT) :: error
+  IMPLICIT NONE
 
-        INTEGER(i_knd), INTENT(OUT) :: ierr
-        !_______________________________________________________________________
-        !
-        !   Local variables
-        !_______________________________________________________________________
+  PUBLIC
 
-        CHARACTER(LEN=64) :: arg
 
-        INTEGER(i_knd) :: n
-        !_______________________________________________________________________
-        !
-        !   Declaration potentially needed for Cray. Seems harmless for others.
-        !_______________________________________________________________________
+  CONTAINS
 
-        INTEGER, EXTERNAL :: IARGC
-        !_______________________________________________________________________
-        !
-        !   Return if not root. Loop over the first two command line arguments
-        !   to get i/o file names.
-        !_______________________________________________________________________
+  SUBROUTINE cmdarg ( ierr, error )
 
-        ierr = 0
-        error = ''
+!-----------------------------------------------------------------------
+!
+! Read the command line for the input and output file names.
+!
+!-----------------------------------------------------------------------
 
-        IF ( iproc /= root ) RETURN
+    CHARACTER(LEN=64), INTENT(OUT) :: error
 
-        SELECT CASE (IARGC())
-        CASE (0)
-            ! what is stdout in fortran?
-            ifile = 'stdin'
-            ofile = 'stdout'
-        CASE (1)
-            ifile = 'stdin'
-            ofile = 'stdout'
-            CALL GETARG ( 1, arg )
-            segment = ADJUSTL( arg )
+    INTEGER(i_knd), INTENT(OUT) :: ierr
+!_______________________________________________________________________
+!
+!   Local variables
+!_______________________________________________________________________
 
-    INTEGER(i_knd) :: narg, n
+    CHARACTER(LEN=64) :: arg
+
+    INTEGER(i_knd) :: narg
 !_______________________________________________________________________
 !
 !   Return if not root. Loop over the first two command line arguments
@@ -77,27 +56,29 @@ MODULE utils_module
 
     narg = COMMAND_ARGUMENT_COUNT ( )
 
-    IF ( narg /= 2 ) THEN
-      ierr = 1
-      error = '***ERROR: CMDARG: Missing command line entry'
-      RETURN
-    END IF
-
-    DO n = 1, 2
-
-      CALL GET_COMMAND_ARGUMENT ( n, arg )
-      arg = ADJUSTL( arg )
-      IF ( arg(1:1)=='-' .OR. arg(1:1)=='<' .OR. arg(1:1)=='>' ) THEN
-        ierr = 1
-        error = '***ERROR: CMDARG: Bad command line entry, arg:'
-        WRITE( error, '(A,A,I2)') TRIM( error ), ' ', n
-      ELSE IF ( n == 1 ) THEN
-        ifile = arg
-      ELSE IF ( n == 2 ) THEN
-        ofile = arg
-      END IF
-
-    END DO
+    SELECT CASE ( narg )
+    CASE ( 0 )
+       ifile = 'stdin'
+       ofile = 'stdout'
+    CASE ( 1 )
+       ifile = 'stdin'
+       ofile = 'stdout'
+       CALL GETARG ( 1, arg )
+       segment = ADJUSTL( arg )
+    CASE ( 2 )
+       CALL GETARG ( 1, arg )
+       write (*, *) ADJUSTL( arg )
+       ifile = ADJUSTL( arg )
+       CALL GETARG ( 2, arg )
+       ofile = ADJUSTL( arg )
+    CASE ( 3 )
+       CALL GETARG ( 1, arg )
+       ifile = ADJUSTL( arg )
+       CALL GETARG ( 2, arg )
+       ofile = ADJUSTL( arg )
+       CALL GETARG ( 3, arg )
+       segment = ADJUSTL( arg )
+     END SELECT
 !_______________________________________________________________________
 !_______________________________________________________________________
 
@@ -112,132 +93,118 @@ MODULE utils_module
 !
 !-----------------------------------------------------------------------
 
-        !_______________________________________________________________________
-        !_______________________________________________________________________
+    CHARACTER(LEN=*), INTENT(IN) :: fstat, faction
 
-    END SUBROUTINE cmdarg
+    CHARACTER(LEN=*), INTENT(IN) :: fname
 
+    CHARACTER(LEN=64), INTENT(OUT) :: error
 
-    SUBROUTINE open_file ( funit, fname, fstat, faction, ierr, error )
+    INTEGER(i_knd), INTENT(IN) :: funit
 
-        !-----------------------------------------------------------------------
-        !
-        ! Open a file.
-        !
-        !-----------------------------------------------------------------------
+    INTEGER(i_knd), INTENT(OUT) :: ierr
+!_______________________________________________________________________
+!
+!   Local variables.
+!_______________________________________________________________________
 
-        CHARACTER(LEN=*), INTENT(IN) :: fstat, faction
+    CHARACTER(LEN=64) :: tname
+!_______________________________________________________________________
+!
+!   Return if not root. Open the file with specified unit, name, status,
+!   action.
+!_______________________________________________________________________
 
-        CHARACTER(LEN=*), INTENT(IN) :: fname
+    ierr = 0
+    error = ''
 
-        CHARACTER(LEN=64), INTENT(OUT) :: error
+    IF ( iproc /= root ) RETURN
 
-        INTEGER(i_knd), INTENT(IN) :: funit
+    tname = TRIM( fname )
 
-        INTEGER(i_knd), INTENT(OUT) :: ierr
-        !_______________________________________________________________________
-        !
-        !   Local variables.
-        !_______________________________________________________________________
+    OPEN( UNIT=funit, FILE=tname, STATUS=fstat, ACCESS='SEQUENTIAL',   &
+          ACTION=faction, IOSTAT=ierr )
 
-        CHARACTER(LEN=64) :: tname
-        !_______________________________________________________________________
-        !
-        !   Return if not root. Open the file with specified unit, name, status,
-        !   action.
-        !_______________________________________________________________________
+    IF ( ierr /= 0 ) THEN
+      error = '***ERROR: OPEN_FILE: Unable to open file, unit:'
+      WRITE( error, '(A,A,I2)') TRIM( error ), ' ', funit
+    END IF
+!_______________________________________________________________________
+!_______________________________________________________________________
 
-        ierr = 0
-        error = ''
-
-        IF ( iproc /= root ) RETURN
-
-        tname = TRIM( fname )
-
-        OPEN( UNIT=funit, FILE=tname, STATUS=fstat, ACCESS='SEQUENTIAL',   &
-            ACTION=faction, IOSTAT=ierr )
-
-        IF ( ierr /= 0 ) THEN
-            error = '***ERROR: OPEN_FILE: Unable to open file, unit:'
-            WRITE( error, '(A,A,I2)') TRIM( error ), ' ', funit
-        END IF
-        !_______________________________________________________________________
-        !_______________________________________________________________________
-
-    END SUBROUTINE open_file
+  END SUBROUTINE open_file
 
 
-    SUBROUTINE close_file ( funit, ierr, error )
+  SUBROUTINE close_file ( funit, ierr, error )
 
-        !-----------------------------------------------------------------------
-        !
-        ! Close a file.
-        !
-        !-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
+!
+! Close a file.
+!
+!-----------------------------------------------------------------------
 
-        CHARACTER(LEN=64), INTENT(OUT) :: error
+    CHARACTER(LEN=64), INTENT(OUT) :: error
 
-        INTEGER(i_knd), INTENT(IN) :: funit
+    INTEGER(i_knd), INTENT(IN) :: funit
 
-        INTEGER(i_knd), INTENT(OUT) :: ierr
-        !_______________________________________________________________________
-        !
-        !   Close the file of specified unit number.
-        !_______________________________________________________________________
+    INTEGER(i_knd), INTENT(OUT) :: ierr
+!_______________________________________________________________________
+!
+!   Close the file of specified unit number.
+!_______________________________________________________________________
 
-        ierr = 0
-        error = ''
+    ierr = 0
+    error = ''
 
-        IF ( iproc /= root ) RETURN
+    IF ( iproc /= root ) RETURN
 
-        CLOSE( UNIT=funit, IOSTAT=ierr )
+    CLOSE( UNIT=funit, IOSTAT=ierr )
 
-        IF ( ierr /= 0 ) THEN
-            error = '***ERROR: CLOSE_FILE: Unable to close file, unit:'
-            WRITE( error, '(A,A,I2)') TRIM( error ), ' ', funit
-        END IF
-        !_______________________________________________________________________
-        !_______________________________________________________________________
+    IF ( ierr /= 0 ) THEN
+      error = '***ERROR: CLOSE_FILE: Unable to close file, unit:'
+      WRITE( error, '(A,A,I2)') TRIM( error ), ' ', funit
+    END IF
+!_______________________________________________________________________
+!_______________________________________________________________________
 
-    END SUBROUTINE close_file
+  END SUBROUTINE close_file
 
 
-    SUBROUTINE print_error ( funit, error )
+  SUBROUTINE print_error ( funit, error )
 
-        !-----------------------------------------------------------------------
-        !
-        ! Print an error message to standard out or to file.
-        !
-        !-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
+!
+! Print an error message to standard out or to file.
+!
+!-----------------------------------------------------------------------
 
-        CHARACTER(LEN=*), INTENT(IN) :: error
+    CHARACTER(LEN=*), INTENT(IN) :: error
 
-        INTEGER(i_knd), INTENT(IN) :: funit
-        !_______________________________________________________________________
-        !
-        !   Print the error message.
-        !_______________________________________________________________________
+    INTEGER(i_knd), INTENT(IN) :: funit
+!_______________________________________________________________________
+!
+!   Print the error message.
+!_______________________________________________________________________
 
-        IF ( iproc /= root ) RETURN
+    IF ( iproc /= root ) RETURN
 
     WRITE( *, 101 ) error
     IF ( funit > 0 ) WRITE( funit, 101 ) error
 !_______________________________________________________________________
 
-        101 FORMAT( 3X, A, / )
-        !_______________________________________________________________________
-        !_______________________________________________________________________
+    101 FORMAT( 3X, A, / )
+!_______________________________________________________________________
+!_______________________________________________________________________
 
-    END SUBROUTINE print_error
+  END SUBROUTINE print_error
 
 
   SUBROUTINE stop_run ( flg1, flg2, flg3, flg4 )
 
-        !-----------------------------------------------------------------------
-        !
-        ! Safely end program execution.
-        !
-        !-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
+!
+! Safely end program execution.
+!
+!-----------------------------------------------------------------------
 
    INTEGER(i_knd), INTENT(IN) :: flg1, flg2, flg3, flg4
 !_______________________________________________________________________
@@ -266,15 +233,15 @@ MODULE utils_module
       END IF
     END IF
 
-        CALL pend
+    CALL pend
 
-        CALL EXIT ( 0 )
+    CALL EXIT ( 0 )
 
-        !STOP
-        !_______________________________________________________________________
-        !_______________________________________________________________________
+    !STOP
+!_______________________________________________________________________
+!_______________________________________________________________________
 
-    END SUBROUTINE stop_run
+  END SUBROUTINE stop_run
 
 
 END MODULE utils_module

@@ -9,15 +9,15 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <semaphore.h>
-#include <liblwk.h>
-#include <xemem.h>
+#include <stdint.h>
+#include <xpmem.h>
 #include <malloc.h>
 #include <mcheck.h>
 
 int cur_id, shared_id;
 
 #define num_entries 4
-//#define PAGE_SIZE 4096
+#define PAGE_SIZE 4096
 #define PAGE_ROUND_UP(x) ( (((ulong)(x)) + PAGE_SIZE-1)  & (~(PAGE_SIZE-1)) )
 
 void analyze_();
@@ -42,15 +42,15 @@ struct usda {
 	int niter;
 	int mine;
 	id_t id;
-	xemem_segid_t segid;
+	xpmem_segid_t segid;
 	char sharename[64];
 };
 
 struct usda *cte;
 
 // make this global for now
-xemem_segid_t seg, seg1;
-xemem_apid_t apid;
+xpmem_segid_t seg, seg1;
+xpmem_apid_t apid;
 
 // Returns the current time in seconds, as a double
 double
@@ -196,7 +196,7 @@ int setup1_(int *nx, int *ny, int *nz, int *ng, char *segment) {
 	char newseg[64];
 
 	id_t my_id;
-	printf("setup1_\n");
+	//printf("setup1_\n");
 	//printf("jury rigging segment");
 	segment[23]=0;
 	//printf("GOT SEGMENT %s\n", segment);
@@ -209,18 +209,9 @@ int setup1_(int *nx, int *ny, int *nz, int *ng, char *segment) {
 	cte->n[1] = *ny;
 	cte->n[2] = *nz;
 	cte->n[3] = *ng;
-	printf("*nx %d *ny %d *nz %d *ng %d\n", *nx, *ny, *nz, *ng);
-	cte->filesize = (*ng)*8 + (*nx)*(*ny)*(*nz)*(*ng)*8;
-	// this is now wrong.
-	// XXX: just to find out why it's walking off the end of the buffer.
-	//cte->filesize = 4096*32;
-	//for(i=0; i < 4; i++)
-	//cte->filesize *= cte->n[i];
-	// so he is truncating what do we do that corresponds to that?
-	// so I need to make a new aspace copy here?
-	// XXX: set up observer process and shared memory?
-
-	// XXX: does snap use different page sizes here?
+	//printf("*nx %d *ny %d *nz %d *ng %d\n", *nx, *ny, *nz, *ng);
+	// we need to know, a priori how large the arrays are going to be
+	cte->filesize = (*ng)*8+(*nx)*(*ny)*(*nz)*(*ng)*8;
 	//printf("cte->filesize %d\n", cte->filesize);
 	status = posix_memalign((void **)&ptr, 4096, cte->filesize /* 4096*32 */ );
 	if(status != 0) {
@@ -229,18 +220,18 @@ int setup1_(int *nx, int *ny, int *nz, int *ng, char *segment) {
 	}
 	snprintf(newseg, 64, "%s-file", segment);
 
-	printf("XEMEM MAKE %s cte->filesize %x rounded %x\n", newseg, cte->filesize, PAGE_ROUND_UP(cte->filesize)*64);
+	//printf("XPMEM MAKE cte->filesize %x rounded %x\n", cte->filesize, PAGE_ROUND_UP(cte->filesize)*64);
 	//cte->filesize = 8192*4;
-	seg1 = xemem_make(ptr, PAGE_ROUND_UP(cte->filesize)*64, newseg);
+	seg1 = xpmem_make(ptr, PAGE_ROUND_UP(cte->filesize)*64, XPMEM_PERMIT_MODE, (void*)0777);
 	if(seg1 <= 0){
 		fprintf(stderr, "couldn't allocate shared xpmem buffer\n");
 		exit(1);
 	}
-	//printf("XEMEM seg1 %x\n", (int)seg1);
+	//printf("XPMEM seg1 %lld\n", seg1);
 	//cte->filesize = 8*(*ng);
 	cte->mine = 0;
 	while(!cte->mine){
-		//printf("%s len %ld not mine yet\n", segment, strlen(segment));
+		printf("%lld not mine yet\n", seg1);
 		sleep(1);
 	}
 	cte->mine = 0;
@@ -263,13 +254,7 @@ int share_init_(int *iproc, char *segment) {
 	int i;
 	int status;
 
-	printf("share_init_ iproc %p segment %s\n", iproc, segment);
-	aspace_get_myid(&my_id);
-	status = aspace_smartmap(my_id, my_id, SMARTMAP_ALIGN, SMARTMAP_ALIGN);
-	if(status != 0){
-		printf("ERROR: aspace_smartmap() status=%d\n", status);
-		exit(1);
-	}
+	//printf("share_init_ iproc %p segment %s\n", iproc, segment);
 
 	// XXX: does snap use different page sizes here?
 	//printf("memaligned\n");
@@ -278,11 +263,11 @@ int share_init_(int *iproc, char *segment) {
 		printf("ERROR: posix_memalign() failed status=%d\n", status);
 		return -1;
 	}
-	//printf("xemem make\n");
+	//printf("xpmem make\n");
 	segment[23]=0;
-	printf("making segment should be %x",  4096*128);
-	seg = xemem_make(cte, 4096*128, segment);
-	//printf("share_init: xemem_make seg %lld\n", seg);
+	//printf("making segment should be %x\n",  4096*128);
+	seg = xpmem_make(cte, 4096*128, XPMEM_PERMIT_MODE, (void*)0777);
+	//printf("share_init: xpmem_make seg %lld\n", seg);
 	if(seg <= 0){
 		fprintf(stderr, "could not allocate metadata structure using xpmem");
 		exit(1);
@@ -295,30 +280,21 @@ int share_init_(int *iproc, char *segment) {
 	cte->filesize = 0;
 	cte->niter = 0;
 	// cte->id = arena_map_backed_region(cte->id,
-	id_t my_aspace;
 	int pagesz = 4096;
 	int nbacking = 4;
 	int npages = 1;
-	struct pmem_region rgn;
-	vaddr_t	region;
 	//rgn.start = 0;
-	aspace_get_myid(&my_aspace);
-	kernel_set(CTL_PMEM, (void*)1, 0);
-	if((status = pmem_alloc_umem(8*VM_PAGE_4KB, VM_PAGE_4KB, &rgn))){
-		printf("couldn't alloc umem! status %d\n", status);
-		exit(-1);
-		return -1;
-	}
-	aspace_get_myid(&my_aspace);
-	status = arena_map_backed_region_anywhere(my_aspace, &region,
-						  npages*pagesz, nbacking*pagesz, VM_USER, BK_ARENA,
-						  pagesz, "cow-region", rgn.start);
-	if(status != 0){
-		printf("arena mapping failed %d\n", status);
-		return -1;
-	}
-	ptr = rgn.start;
 
+	//ptr = (8*4096);
+	char segid[32];
+	switch (fork()){
+	case 0:
+		snprintf(segid, 32, "%.16lld", seg);
+		char *arg[5] = {"taskset", "0x100000", "../../SNAP-analytics/analyze_linux_xpmem",  segid, NULL};
+		if(execv("/bin/taskset", arg) < 0)
+			perror("taskset");
+		exit(-1);
+	}
 
 	return 1;
 }
@@ -329,17 +305,19 @@ int allocate_v_(unsigned long *size, void **data)
 {
 	*data = ptr;
 	cte->meta_offset = *size*8;
-	memset(ptr, 0, *size);
+	//memset(ptr, 0, *size);
 	return 1;
 }
 
 int allocate_flux_(unsigned long *size, void **data)
 {
+	//printf("ptr %p cte->meta_offset %lld *size %lld\n", ptr, cte->meta_offset, *size);
+	//for(;;);
 	*data = ptr+cte->meta_offset;
 	cte->filesize = (cte->meta_offset + *size)*8;
 	//memset(*data, 0, *size);
-	printf("share_init_: xemem_making ptr %llx size %llx name %s", ptr, PAGE_ROUND_UP(cte->filesize)*32, cte->sharename);
-	cte->segid = xemem_make(ptr, PAGE_ROUND_UP(cte->filesize)*32, cte->sharename);
+	//printf("share_init_: xpmem_making ptr %llx size %llx name %s", ptr, PAGE_ROUND_UP(cte->filesize)*32, cte->sharename);
+	cte->segid = xpmem_make(ptr, PAGE_ROUND_UP(cte->filesize)*32, XPMEM_PERMIT_MODE, (void*)0777);
 	if(cte->segid <= 0){
 		fprintf(stderr, "share_init_: couldn't allocate shared xpmem buffer\n");
 		exit(1);
@@ -356,18 +334,11 @@ int publish_(int *tint) {
 	unsigned long pages, ret;
 	id_t src, dst;
 	int status;
-	xemem_segid_t seg;
+	xpmem_segid_t seg;
 
 	cte->time_loop  = *tint;
-	// TODO find id
-	//printf("publishing *tint %d\n", *tint);
-	// so where does my id come from?
-	// put it
-	status = aspace_copy(cte->id, &dst, 0);
-	// who deletes this?
-	//printf("publish: waiting for mine\n");
 	cte->niter++;
-	cte->segid = xemem_make(ptr, PAGE_ROUND_UP(cte->filesize)*128, cte->sharename);
+	cte->segid = xpmem_make(ptr, PAGE_ROUND_UP(cte->filesize)*128, XPMEM_PERMIT_MODE, (void*)0777);
 	if(cte->segid <= 0){
 		fprintf(stderr, "share_init_: couldn't allocate shared xpmem buffer\n");
 		exit(1);
@@ -407,10 +378,6 @@ int finalize_()
 {
 	cte->finalized = 1;
 	return 1;
-}
-
-int aspace_copy_(int my_id, id_t dest) {
-	return aspace_copy(my_id, &dest, 0);
 }
 
 int create_shared_() {

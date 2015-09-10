@@ -10,7 +10,7 @@
 
 MODULE setup_module
 
-  USE global_module, ONLY: i_knd, r_knd, ounit, zero, half, one, two
+  USE global_module, ONLY: i_knd, r_knd, ounit, zero, half, one, two, segment
 
   USE geom_module, ONLY: ndimen, nx, ny, nz, lx, ly, lz, dx, dy, dz,   &
     ny_gl, nz_gl, jlb, jub, klb, kub, nc, jdim, kdim
@@ -26,7 +26,7 @@ MODULE setup_module
 
   USE mms_module, ONLY: mms_setup
 
-  USE utils_module, ONLY: print_error, stop_run, open_file, close_file, segment
+  USE utils_module, ONLY: print_error, stop_run, open_file, close_file!, segment
 
   USE time_module, ONLY: tset, wtime
 

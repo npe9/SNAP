@@ -11,7 +11,7 @@ AX_OPENMP
 AC_PROG_CC
 AC_PROG_FC
 
-FCFLAGS="-g -fbounds-check -Wall -fbacktrace $FCFLAGS"
+FCFLAGS="-g -Wall -O3 $FCFLAGS"
 # Checks for libraries.
 AC_CHECK_LIB([gomp], [omp_get_num_threads]) 
 AC_CHECK_LIB([pthread], [pthread_create])
